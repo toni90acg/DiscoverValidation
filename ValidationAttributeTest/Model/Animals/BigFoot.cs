@@ -1,5 +1,6 @@
 ﻿namespace ValidationAttributeTest.Model.Animals
 {
+    //BigFoot doesn't have any validation
     public class BigFoot : IAnimal
     {
         public string Name { get; set; }
