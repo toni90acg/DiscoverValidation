@@ -1,4 +1,4 @@
-﻿namespace ValidationAttributeTest.Model.Animals
+﻿namespace ValidationAttributeTest.Model.Animals.Interface
 {
     public interface IAnimal
     {

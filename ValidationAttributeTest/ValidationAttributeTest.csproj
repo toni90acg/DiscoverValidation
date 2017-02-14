@@ -39,6 +39,7 @@
       <HintPath>..\packages\FluentValidation.6.2.1.0\lib\Net45\FluentValidation.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -53,7 +54,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="AnimalValidationAttribute.cs" />
+    <Compile Include="ValidationAttributeTest.cs" />
     <Compile Include="Model\Animals\BigFoot.cs" />
     <Compile Include="Model\Animals\Bird.cs" />
     <Compile Include="Model\Animals\Cat.cs" />

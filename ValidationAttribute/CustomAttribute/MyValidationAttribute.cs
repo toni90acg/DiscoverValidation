@@ -4,11 +4,11 @@ using ValidationAttribute.GenericValidator;
 
 namespace ValidationAttribute.CustomAttribute
 {
-    public class ValidationAttribute : Attribute
+    public class MyValidationAttribute : Attribute
     {
         public IAttributeValidator Validator { get; set; }
 
-        public ValidationAttribute(Type validator)
+        public MyValidationAttribute(Type validator)
         {
             if (!typeof(IAttributeValidator).IsAssignableFrom(validator))
                 throw new ValidationAttributeException(validator.Name);

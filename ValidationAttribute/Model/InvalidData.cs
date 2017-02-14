@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using FluentValidation.Results;
-using ValidationAttribute.Model.Data;
+using ValidationAttribute.Model.Interface;
 
 namespace ValidationAttribute.Model
 {

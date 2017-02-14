@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace ValidationAttribute.Model.Data
+namespace ValidationAttribute.Model.Interface
 {
     public interface IData
     {
         Type Type { get; set; }
-        Object Entity { get; set; }
+        object Entity { get; set; }
     }
 }

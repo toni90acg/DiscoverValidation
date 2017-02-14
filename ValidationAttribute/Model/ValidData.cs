@@ -1,5 +1,5 @@
 using System;
-using ValidationAttribute.Model.Data;
+using ValidationAttribute.Model.Interface;
 
 namespace ValidationAttribute.Model
 {

@@ -1,8 +1,10 @@
+using ValidationAttribute.CustomAttribute;
+using ValidationAttributeTest.Model.Animals.Interface;
 using ValidationAttributeTest.Validations;
 
 namespace ValidationAttributeTest.Model.Animals
 {
-    [ValidationAttribute.CustomAttribute.Validation(typeof(BirdValidation))]
+    [MyValidation(typeof(BirdValidation))]
     public class Bird : IAnimal
     {
         public string Name { get; set; }

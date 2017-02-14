@@ -3,7 +3,7 @@ using FluentValidation.Results;
 
 namespace ValidationAttribute.GenericValidator
 {
-    public class AbstractAttributeValidator<T> : AbstractValidator<T>, IAttributeValidator
+    public abstract class AbstractAttributeValidator<T> : AbstractValidator<T>, IAttributeValidator
     {
         public ValidationResult ValidateEntity(object entity)
         {

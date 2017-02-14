@@ -2,18 +2,20 @@
 using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ValidationAttribute.CustomAttribute;
 using ValidationAttribute.Model;
-using ValidationAttribute.Model.Data;
+using ValidationAttribute.Model.Interface;
 using ValidationAttributeTest.Model.Animals;
+using ValidationAttributeTest.Model.Animals.Interface;
 
 
 namespace ValidationAttributeTest
 {
     [TestClass]
-    public class AnimalValidationAttribute
+    public class ValidationAttributeTest
     {
         private readonly IList<IAnimal> _animals;
-        public AnimalValidationAttribute()
+        public ValidationAttributeTest()
         {
             _animals = new List<IAnimal>()
             {
@@ -40,7 +42,7 @@ namespace ValidationAttributeTest
             foreach (var animal in _animals)
             {
                 var validationAttribute = animal.GetType()
-                    .GetCustomAttribute<ValidationAttribute.CustomAttribute.ValidationAttribute>();
+                    .GetCustomAttribute<MyValidationAttribute>();
 
                 if (validationAttribute == null)
                 {
@@ -78,5 +80,65 @@ namespace ValidationAttributeTest
             Assert.AreEqual(3, target.OfType<ValidData>().Count());
             Assert.AreEqual(1, target.OfType<NotValidatableData>().Count());
         }
+
+
+        #region Example of real use
+
+        [TestMethod]
+        public void ValidationMethod()
+        {
+            //Act
+            var target = ValidateData(_animals);
+
+            //Assert
+            Assert.AreEqual(4, target.OfType<InvalidData>().Count());
+            Assert.AreEqual(3, target.OfType<ValidData>().Count());
+            Assert.AreEqual(1, target.OfType<NotValidatableData>().Count());
+        }
+
+        public IList<IData> ValidateData<T>(IList<T> entities)
+        {
+            var result = new List<IData>();
+
+            foreach (var animal in _animals)
+            {
+                var validationAttribute = animal.GetType()
+                    .GetCustomAttribute<MyValidationAttribute>();
+
+                if (validationAttribute == null)
+                {
+                    result.Add(new NotValidatableData()
+                    {
+                        Type = animal.GetType(),
+                        Entity = animal
+                    });
+                    continue;
+                }
+
+                var validationResult = validationAttribute.Validator.ValidateEntity(animal);
+
+                if (validationResult.IsValid)
+                {
+                    result.Add(new ValidData()
+                    {
+                        Type = animal.GetType(),
+                        Entity = animal
+                    });
+                }
+                else
+                {
+                    result.Add(new InvalidData()
+                    {
+                        Type = animal.GetType(),
+                        Entity = animal,
+                        ValidationFailures = validationResult.Errors
+                    });
+                }
+            }
+            return result;
+        }
+
+        #endregion
+
     }
 }

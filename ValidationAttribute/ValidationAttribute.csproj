@@ -51,7 +51,7 @@
     <Compile Include="Model\InvalidData.cs" />
     <Compile Include="Model\NotValidatableData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="CustomAttribute\ValidationAttribute.cs" />
+    <Compile Include="CustomAttribute\MyValidationAttribute.cs" />
     <Compile Include="Model\ValidData.cs" />
   </ItemGroup>
   <ItemGroup>
