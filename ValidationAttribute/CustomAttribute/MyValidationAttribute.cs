@@ -1,6 +1,6 @@
 ﻿using System;
-using ValidationAttribute.Exceptions;
 using ValidationAttribute.GenericValidator;
+using ValidationAttribute.Exceptions;
 
 namespace ValidationAttribute.CustomAttribute
 {
