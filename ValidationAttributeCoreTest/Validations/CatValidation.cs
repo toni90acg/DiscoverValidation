@@ -1,3 +1,4 @@
+using FluentValidation;
 using ValidationAttributeCore.CustomAttribute;
 using ValidationAttributeCore.GenericValidator;
 using ValidationAttributeCoreTest.Model.Animals;

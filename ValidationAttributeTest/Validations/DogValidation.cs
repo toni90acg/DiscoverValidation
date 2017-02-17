@@ -2,6 +2,7 @@ using FluentValidation;
 using ValidationAttribute.GenericValidator;
 using ValidationAttributeTest.Model.Animals;
 
+
 namespace ValidationAttributeTest.Validations
 {
     public class DogValidation : AbstractAttributeValidator<Dog>

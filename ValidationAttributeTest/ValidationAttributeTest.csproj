@@ -35,8 +35,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FluentValidation">
+    <Reference Include="FluentValidation, Version=6.2.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\FluentValidation.6.2.1.0\lib\Net45\FluentValidation.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -66,10 +67,21 @@
     <Compile Include="Validations\DogValidation.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ValidationAttributeCoreTest\ValidationAttributeCoreTest.csproj">
+      <Project>{9AE5F40F-5EEE-4D10-8589-FDC26078E679}</Project>
+      <Name>ValidationAttributeCoreTest</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ValidationAttributeCore\ValidationAttributeCore.csproj">
+      <Project>{4768A635-DF37-48D1-8E00-3AD0B209DE79}</Project>
+      <Name>ValidationAttributeCore</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ValidationAttribute\ValidationAttribute.csproj">
       <Project>{47d869cb-1723-4f7b-9955-83279bcb6318}</Project>
       <Name>ValidationAttribute</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

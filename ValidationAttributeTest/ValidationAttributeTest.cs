@@ -3,10 +3,13 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ValidationAttribute.CustomAttribute;
+using ValidationAttribute.Exceptions;
+using ValidationAttribute.GenericValidator;
 using ValidationAttribute.Model;
 using ValidationAttribute.Model.Interface;
 using ValidationAttributeTest.Model.Animals;
 using ValidationAttributeTest.Model.Animals.Interface;
+using ValidationAttributeTest.Validations;
 
 
 namespace ValidationAttributeTest
@@ -36,6 +39,12 @@ namespace ValidationAttributeTest
         [TestMethod]
         public void Validation()
         {
+            var ddd = new DogValidation();
+            var validator = ddd.GetType();
+            if (!typeof(IAttributeValidator).IsAssignableFrom(validator))
+                throw new ValidationAttributeException(validator.Name);
+
+
             //Act
             var target = new List<IData>();
 
