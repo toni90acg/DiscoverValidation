@@ -67,14 +67,6 @@
     <Compile Include="Validations\DogValidation.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ValidationAttributeCoreTest\ValidationAttributeCoreTest.csproj">
-      <Project>{9AE5F40F-5EEE-4D10-8589-FDC26078E679}</Project>
-      <Name>ValidationAttributeCoreTest</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ValidationAttributeCore\ValidationAttributeCore.csproj">
-      <Project>{4768A635-DF37-48D1-8E00-3AD0B209DE79}</Project>
-      <Name>ValidationAttributeCore</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ValidationAttribute\ValidationAttribute.csproj">
       <Project>{47d869cb-1723-4f7b-9955-83279bcb6318}</Project>
       <Name>ValidationAttribute</Name>

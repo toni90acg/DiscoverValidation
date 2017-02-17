@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ValidationAttribute", "Vali
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ValidationAttributeTest", "ValidationAttributeTest\ValidationAttributeTest.csproj", "{D40B0458-0377-468C-8E21-3D3F977C5682}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ValidationAttributeCore", "ValidationAttributeCore\ValidationAttributeCore.csproj", "{4768A635-DF37-48D1-8E00-3AD0B209DE79}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscoverValidationCore", "ValidationAttributeCore\DiscoverValidationCore.csproj", "{4768A635-DF37-48D1-8E00-3AD0B209DE79}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ValidationAttributeCoreTest", "ValidationAttributeCoreTest\ValidationAttributeCoreTest.csproj", "{9AE5F40F-5EEE-4D10-8589-FDC26078E679}"
 EndProject

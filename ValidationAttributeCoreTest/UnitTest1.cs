@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using FluentValidation;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ValidationAttributeCore.Application;
-using ValidationAttributeCore.CustomAttribute;
 using ValidationAttributeCore.GenericValidator;
 using ValidationAttributeCore.Model;
-using ValidationAttributeCore.Model.Interface;
 using ValidationAttributeCoreTest.Model.Animals;
+using ValidationAttributeCoreTest.Model.Animals.Interface;
+using ValidationAttributeCoreTest.Validations;
 
 namespace ValidationAttributeCoreTest
 {
@@ -43,170 +44,47 @@ namespace ValidationAttributeCoreTest
             };
 
         }
-        private IList<object> _animals;
-        [TestMethod]
-        public void TestMethod1()
-        {
-            _animals = new List<object>()
-            {
-                new Dog("Max", 6, false, "Mammal"),
-                new Dog("", 4, false, "Mammal"),
-                new Dog("Bobby", 8, true, "Mammal"),
-
-                new Cat("Meow", 1, false, "Mammal"),
-                new Cat("Calcetines", -1, false, "Mammal"),
-
-                new Bird("Jimmy", 1, true, "Bird"),
-                new Bird("Twetty", 2, false, ""),
-
-                new BigFoot()
-            };
-        }
+        private readonly List<object> _animals;
 
         [TestMethod]
-        public void ValidationMethod2()
+        public void ValidationOneDogElement()
         {
-            //var a =  new BirdValidation();
-            //var b = new DogValidation();
+            //Arrange
+            var dog = new Dog("Max", 1, false, "Mammal");
+
             //Act
-            MyValidator.Validate(_animals);
-            MyValidator.Validate(new Dog("",1,true,""));
-
-
-
+            var target = DiscoverValidator.ValidateElement(dog);
+            
+            //Assert
+            Assert.IsNotNull(target);
+            Assert.IsInstanceOfType(target, typeof(ValidData<Dog>));
         }
 
         [TestMethod]
-        public void GetConditionFromAssemblie()
+        public void ValidationOneCatElement()
         {
-            var type1 = typeof(NotValidatableData<>);
-            _animals = new List<object>()
-            {
-                new Dog("Max", 6, false, "Mammal"),
-                new Dog("", 4, false, "Mammal"),
-                new Dog("Bobby", 8, true, "Mammal"),
+            //Arrange
+            var cat = new Cat("Max", 1, false, "Mammal");
 
-                new Cat("Meow", 1, false, "Mammal"),
-                new Cat("Calcetines", -1, false, "Mammal"),
+            //Act
+            var target = DiscoverValidator.ValidateElement(cat);
 
-                new Bird("Jimmy", 1, true, "Bird"),
-                new Bird("Twetty", 2, false, ""),
-
-                new BigFoot()
-            };
-            //   var s = new  NotValidatableData<Dog>();
-
-            //   foreach (var type1 in types)
-            // {
-            //if (!type1.IsClass) ;//continue;
-            //    Type[] typeArgs = { typeof(Dog) };
-            //    var makeme = type1.MakeGenericType(typeArgs);
-            //  var ss=Activator.CreateInstance(makeme);
-
-            //foreach (var animal in _animals)
-            //{
-            //    if (!type1.IsClass) ;//continue;
-            //    Type[] typeArgs = { animal.GetType() };
-            //    var makeme = type1.MakeGenericType(typeArgs);
-            //    var ss = Activator.CreateInstance(makeme, animal);
-
-
-            //}
-
-
-            var tipos = Assembly.GetExecutingAssembly();
-
-            var types = tipos.GetTypes();
-
-            var AllAsignables = types.
-                Where(t => IsAssignableToGenericType(t, typeof(AbstractAttributeValidator<>)))
-
-                .Where(t => !t.IsAbstract && !t.IsInterface);
-            foreach (var type in types)
-            {
-                var result = IsAssignableToGenericType(type, typeof(AbstractAttributeValidator<>));
-            }
-
-
-            //   }
-
+            //Assert
+            Assert.IsNotNull(target);
+            Assert.IsInstanceOfType(target, typeof(ValidData<Cat>));
         }
 
-
-        public static bool IsAssignableToGenericType(Type givenType, Type genericType)
+        [TestMethod]
+        public void ValidationMultipleElements()
         {
-            var interfaceTypes = givenType.GetInterfaces();
+            //Act
+            var target = DiscoverValidator.ValidateAll(_animals);
+            var target2 = DiscoverValidator.GetDataOfType<Bird>(target);
 
-            foreach (var it in interfaceTypes)
-            {
-                if (it.IsGenericType && it.GetGenericTypeDefinition() == genericType)
-                    return true;
-            }
-
-            if (givenType.IsGenericType && givenType.GetGenericTypeDefinition() == genericType)
-                return true;
-
-            Type baseType = givenType.BaseType;
-            if (baseType == null) return false;
-
-            return IsAssignableToGenericType(baseType, genericType);
+            //Assert
+            Assert.IsNotNull(target);
+            Assert.AreEqual(1, target.OfType<InvalidData<Bird>>().Count());
+            Assert.AreEqual(2, target.OfType<InvalidData<Dog>>().Count());
         }
-
-
-        //[TestMethod]
-        //public void Validation()
-        //{
-        //    //Act
-        //    var target = new List<IData<>>();
-
-        //    foreach (var animal in _animals)
-        //    {
-        //        var elementType = typeof(NotValidatableData<>);
-
-        //        var constructedObject = elementType.MakeGenericType(animal.GetType());
-        //        dynamic validator = Activator.CreateInstance(constructedObject);
-        //        validator.Type = animal.GetType();
-        //        var casted = Convert.ChangeType(animal, animal.GetType());
-        //        validator.Entity2 = casted;
-
-        //        var validationAttribute = animal.GetType()
-        //            .GetCustomAttribute<ValidateEntityAttribute>();
-
-        //        if (validationAttribute == null)
-        //        {
-        //            target.Add(new NotValidatableData()
-        //            {
-        //                Type = animal.GetType(),
-        //                Entity = animal
-        //            });
-        //            continue;
-        //        }
-
-        //        //var validationResult = validationAttribute.Entity.ValidateEntity(animal);
-
-        //        if (validationResult.IsValid)
-        //        {
-        //            target.Add(new ValidData()
-        //            {
-        //                Type = animal.GetType(),
-        //                Entity = animal
-        //            });
-        //        }
-        //        else
-        //        {
-        //            target.Add(new InvalidData()
-        //            {
-        //                Type = animal.GetType(),
-        //                Entity = animal,
-        //                ValidationFailures = validationResult.Errors
-        //            });
-        //        }
-        //    }
-
-        //    //Assert
-        //    Assert.AreEqual(4, target.OfType<InvalidData>().Count());
-        //    Assert.AreEqual(3, target.OfType<ValidData>().Count());
-        //    Assert.AreEqual(1, target.OfType<NotValidatableData>().Count());
-        //}
     }
 }

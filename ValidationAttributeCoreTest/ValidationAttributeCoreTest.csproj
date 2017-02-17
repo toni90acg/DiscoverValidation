@@ -66,9 +66,9 @@
     <Compile Include="Validations\DogValidation.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ValidationAttributeCore\ValidationAttributeCore.csproj">
+    <ProjectReference Include="..\ValidationAttributeCore\DiscoverValidationCore.csproj">
       <Project>{4768a635-df37-48d1-8e00-3ad0b209de79}</Project>
-      <Name>ValidationAttributeCore</Name>
+      <Name>DiscoverValidationCore</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
