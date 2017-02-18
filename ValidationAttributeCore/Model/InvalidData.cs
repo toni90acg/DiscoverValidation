@@ -13,5 +13,11 @@ namespace ValidationAttributeCore.Model
         {
             Entity = entity;
         }
+
+        public InvalidData(T entity, IList<ValidationFailure> validationFailures)
+        {
+            Entity = entity;
+            ValidationFailures = validationFailures;
+        }
     }
 }

@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Security.Principal;
+using FluentValidation.Results;
 using ValidationAttributeCore.CustomAttribute;
 using ValidationAttributeCore.GenericValidator;
+using ValidationAttributeCore.Helpers;
 using ValidationAttributeCore.Model;
 using ValidationAttributeCore.Model.Interface;
+using ValidationAttributeCore.Model.ValidationResults;
 
 namespace ValidationAttributeCore.Application
 {
@@ -18,69 +19,10 @@ namespace ValidationAttributeCore.Application
         static DiscoverValidator()
         {
             ValidatorsDictionary = new Dictionary<Type, Type>();
-
             LoadValidators();
         }
-
-        public static IList<object> ValidateAll(IList<object> coleccion)
-        {
-            var result = new List<object>();
-
-            foreach (var element in coleccion)
-            {
-                if (ValidatorsDictionary.ContainsKey(element.GetType()))
-                {
-                    var validatorType = ValidatorsDictionary[element.GetType()];
-
-                    var validator = (IAttributeValidator) Activator.CreateInstance(validatorType);
-                    var validationResult = validator.ValidateEntity(element);
-
-                    if (validationResult == null)
-                    {
-                        result.Add(CreateDataObj(typeof(NotValidatableData<>), element));
-                    }
-
-                    else if (validationResult.IsValid)
-                    {
-                        result.Add(CreateDataObj(typeof(ValidData<>), element));
-                    }
-                    else
-                    {
-                        result.Add(CreateDataObj(typeof(InvalidData<>), element));
-                    }
-                }
-                else
-                {
-                    result.Add(CreateDataObj(typeof(NotValidatableData<>), element));
-                }
-            }
-
-            return result;
-        }
         
-        private static IData<T> Validate<T>(T element)
-        {
-            return ValidateElement(element);
-        }
-
-        public static IList<IData<T>> GetDataOfType<T>(IList<object> lista)
-        {
-            var result = new List<IData<T>>();
-            foreach (var o in lista)
-            {
-                
-                var type = o.GetType();
-                if (type == typeof(ValidData<T>))
-                {
-                    var element = o as IData<T>;
-                    T element2 =  element.Entity;
-                    result.Add(CreateData<T>(typeof(ValidData<>), element2));
-                }
-            }
-            return result;
-        }
-
-        public static IData<T> ValidateElement<T>(T element)
+        public static IData<T> ValidateEntity<T>(T element)
         {
             if (ValidatorsDictionary.ContainsKey(element.GetType()))
             {
@@ -95,30 +37,102 @@ namespace ValidationAttributeCore.Application
                 }
                 else
                 {
-                    return CreateData(typeof(InvalidData<>), element);
+                    var data = (InvalidData<T>) CreateData(typeof(InvalidData<>), element);
+                    data.ValidationFailures = results.Errors;
+                    return data;
                 }
             }
             return CreateData(typeof(NotValidatableData<>), element);
         }
 
-        private static IData<T> CreateData<T>(Type typeOfData, T element)
+        public static List<IData<T>> ValidateEntity<T>(List<T> elements)
+        {
+            var result = new List<IData<T>>();
+            foreach (var element in elements)
+            {
+                result.Add(ValidateEntity(element));
+            }
+            return result;
+        }
+
+        public static DiscoverValidationResults ValidateMultipleEntities(IList<object> coleccion)
+        {
+            var results = new DiscoverValidationResults { ValidatableEntityTypes = ValidatorsDictionary.Keys.ToList() };
+
+            foreach (var element in coleccion)
+            {
+                if (ValidatorsDictionary.ContainsKey(element.GetType()))
+                {
+                    var validatorType = ValidatorsDictionary[element.GetType()];
+
+                    var validator = (IAttributeValidator)Activator.CreateInstance(validatorType);
+                    var validationResult = validator.ValidateEntity(element);
+
+                    if (validationResult == null)
+                    {
+                        var data = CreateDataObj(typeof(NotValidatableData<>), element);
+                        results.NotValidatableEntityTypes.Add(element.GetType());
+                        results.NotValidatableDataList.Add(data);
+                        results.AllDataList.Add(data);
+                    }
+
+                    else if (validationResult.IsValid)
+                    {
+                        var data = CreateDataObj(typeof(ValidData<>), element);
+                        results.ValidDataList.Add(data);
+                        results.AllDataList.Add(data);
+                    }
+                    else
+                    {
+                        var data = CreateDataObj(typeof(InvalidData<>), element, validationResult.Errors);
+
+                        results.InvalidDataList.Add(data);
+                        results.AllDataList.Add(data);
+                    }
+                }
+                else
+                {
+                    var data = CreateDataObj(typeof(NotValidatableData<>), element);
+                    results.NotValidatableEntityTypes.Add(element.GetType());
+                    results.NotValidatableDataList.Add(data);
+                    results.AllDataList.Add(data);
+                }
+            }
+
+            return results;
+        }
+
+        #region Private Methods
+
+        internal static IData<T> CreateData<T>(Type typeOfData, T element)
         {
             return (IData<T>) CreateDataObj(typeOfData, element);
         }
 
+        internal static object CreateDataObj(Type typeOfData, object element)
+        {
+            Type[] typeArgs = {element.GetType()};
+            var makeme = typeOfData.MakeGenericType(typeArgs);
+            return Activator.CreateInstance(makeme, element);
+        }
 
-        private static object CreateDataObj(Type typeOfData, object element)
+        internal static object CreateDataObj(Type typeOfData, object element, IList<ValidationFailure> failures)
         {
             Type[] typeArgs = { element.GetType() };
             var makeme = typeOfData.MakeGenericType(typeArgs);
-            return Activator.CreateInstance(makeme, element);
+            var ctorParams = new[]
+            {
+                element,
+                failures
+            };
+            return Activator.CreateInstance(makeme, ctorParams);
         }
 
         private static void LoadValidators()
         {
             AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
-                   .Where(t => IsAssignableToGenericType(t, typeof(AbstractAttributeValidator<>)))
+                .Where(t => Helper.IsAssignableToGenericType(t, typeof(AbstractAttributeValidator<>)))
                 .Where(t => !t.IsAbstract && !t.IsInterface)
                 .Select(s => new
                 {
@@ -129,23 +143,6 @@ namespace ValidationAttributeCore.Application
                 .ForEach(e => ValidatorsDictionary.Add(e.attribute.Entity, e.validator));
         }
 
-        private static bool IsAssignableToGenericType(Type givenType, Type genericType)
-        {
-            var interfaceTypes = givenType.GetInterfaces();
-
-            foreach (var it in interfaceTypes)
-            {
-                if (it.IsGenericType && it.GetGenericTypeDefinition() == genericType)
-                    return true;
-            }
-
-            if (givenType.IsGenericType && givenType.GetGenericTypeDefinition() == genericType)
-                return true;
-
-            var baseType = givenType.BaseType;
-            if (baseType == null) return false;
-
-            return IsAssignableToGenericType(baseType, genericType);
-        }
+        #endregion
     }
 }

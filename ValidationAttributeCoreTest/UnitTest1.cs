@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using FluentValidation;
+﻿using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ValidationAttributeCore.Application;
-using ValidationAttributeCore.GenericValidator;
 using ValidationAttributeCore.Model;
 using ValidationAttributeCoreTest.Model.Animals;
-using ValidationAttributeCoreTest.Model.Animals.Interface;
-using ValidationAttributeCoreTest.Validations;
 
 namespace ValidationAttributeCoreTest
 {
@@ -53,7 +46,7 @@ namespace ValidationAttributeCoreTest
             var dog = new Dog("Max", 1, false, "Mammal");
 
             //Act
-            var target = DiscoverValidator.ValidateElement(dog);
+            var target = DiscoverValidator.ValidateEntity(dog);
             
             //Assert
             Assert.IsNotNull(target);
@@ -67,7 +60,7 @@ namespace ValidationAttributeCoreTest
             var cat = new Cat("Max", 1, false, "Mammal");
 
             //Act
-            var target = DiscoverValidator.ValidateElement(cat);
+            var target = DiscoverValidator.ValidateEntity(cat);
 
             //Assert
             Assert.IsNotNull(target);
@@ -78,13 +71,21 @@ namespace ValidationAttributeCoreTest
         public void ValidationMultipleElements()
         {
             //Act
-            var target = DiscoverValidator.ValidateAll(_animals);
-            var target2 = DiscoverValidator.GetDataOfType<Bird>(target);
-
+            var results = DiscoverValidator.ValidateMultipleEntities(_animals);
+            var resultsOneEntity = DiscoverValidator.ValidateEntity(new List<Dog>()
+            {
+                new Dog("Max", 6, false, "Mammal"),
+                new Dog("", 4, false, "Mammal"),
+                new Dog("Bobby", 8, true, "Mammal"),
+            });
+            var b = results.GetDataOfEntityType<Dog>();
+            //var a = results.GetValidDataCastedPre(results.ValidDataList);
+            //var target4 = DiscoverValidator.GetValidDate(target);
+            var valid = results.GetDataOfEntityType<Dog>();
+            var valid2 = results.GetValidDataOfType<Dog>();
+            var valid3 = results.GetInvalidDataOfType<Dog>();
+            var valid4 = results.GetNotValidatableDataOfType<Dog>();
             //Assert
-            Assert.IsNotNull(target);
-            Assert.AreEqual(1, target.OfType<InvalidData<Bird>>().Count());
-            Assert.AreEqual(2, target.OfType<InvalidData<Dog>>().Count());
         }
     }
 }

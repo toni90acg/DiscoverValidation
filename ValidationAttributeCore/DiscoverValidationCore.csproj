@@ -44,6 +44,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\Helper.cs" />
+    <Compile Include="Model\ValidationResults\DiscoverValidationResults.cs" />
     <Compile Include="Application\DiscoverValidator.cs" />
     <Compile Include="CustomAttribute\ValidateEntityAttribute.cs" />
     <Compile Include="GenericValidator\AbstractAttributeValidator.cs" />

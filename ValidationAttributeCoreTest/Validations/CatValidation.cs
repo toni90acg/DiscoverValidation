@@ -6,7 +6,7 @@ using ValidationAttributeCoreTest.Model.Animals;
 namespace ValidationAttributeCoreTest.Validations
 {
     [ValidateEntity(typeof(Cat))]
-    public class CatValidation : AbstractAttributeValidator<Cat>, IFindValidation
+    public class CatValidation : AbstractAttributeValidator<Cat>
     {
         public CatValidation()
         {

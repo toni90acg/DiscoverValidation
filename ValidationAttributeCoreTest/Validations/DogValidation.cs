@@ -6,7 +6,7 @@ using ValidationAttributeCoreTest.Model.Animals;
 namespace ValidationAttributeCoreTest.Validations
 {
     [ValidateEntity(typeof(Dog))]
-    public class DogValidation : AbstractAttributeValidator<Dog> , IFindValidation
+    public class DogValidation : AbstractAttributeValidator<Dog>
     {
 
         public DogValidation()

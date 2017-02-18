@@ -12,8 +12,4 @@ namespace ValidationAttributeCore.GenericValidator
         /// <returns>Validation results</returns>
         ValidationResult ValidateEntity(object entity);
     }
-
-    public interface IFindValidation
-    {
-    }
 }
