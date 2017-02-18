@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ValidationAttributeCore.Application;
 using ValidationAttributeCore.Model;
@@ -6,20 +7,12 @@ using ValidationAttributeCoreTest.Model.Animals;
 
 namespace ValidationAttributeCoreTest
 {
-
-
-
-
     [TestClass]
-    public class StressTest
+    public class DiscoverValidationTest
     {
-        ////for 100,1000,10000,100000000000
-    }
+        private readonly List<object> _animals;
 
-    [TestClass]
-    public class UnitTest1
-    {
-        public UnitTest1()
+        public DiscoverValidationTest()
         {
             _animals = new List<object>()
             {
@@ -35,12 +28,10 @@ namespace ValidationAttributeCoreTest
 
                 new BigFoot()
             };
-
         }
-        private readonly List<object> _animals;
 
         [TestMethod]
-        public void ValidationOneDogElement()
+        public void ValidationOneValidDogElement()
         {
             //Arrange
             var dog = new Dog("Max", 1, false, "Mammal");
@@ -54,38 +45,50 @@ namespace ValidationAttributeCoreTest
         }
 
         [TestMethod]
-        public void ValidationOneCatElement()
+        public void ValidationOneInvalidCatElement()
         {
             //Arrange
-            var cat = new Cat("Max", 1, false, "Mammal");
+            var cat = new Cat("Max", 1, true, "Mammal");
 
             //Act
             var target = DiscoverValidator.ValidateEntity(cat);
 
             //Assert
             Assert.IsNotNull(target);
-            Assert.IsInstanceOfType(target, typeof(ValidData<Cat>));
+            Assert.IsInstanceOfType(target, typeof(InvalidData<Cat>));
+            Assert.IsNotNull((target as InvalidData<Cat>)?.ValidationFailures);
         }
 
         [TestMethod]
-        public void ValidationMultipleElements()
+        public void ValidationMultipleElementsOfOneUniqueType()
         {
             //Act
-            var results = DiscoverValidator.ValidateMultipleEntities(_animals);
             var resultsOneEntity = DiscoverValidator.ValidateEntity(new List<Dog>()
             {
                 new Dog("Max", 6, false, "Mammal"),
                 new Dog("", 4, false, "Mammal"),
                 new Dog("Bobby", 8, true, "Mammal"),
             });
+            //Assert
+            Assert.IsNotNull(resultsOneEntity);
+            Assert.AreEqual(1, resultsOneEntity.OfType<ValidData<Dog>>());
+            Assert.AreEqual(1, resultsOneEntity.OfType<InvalidData<Dog>>());
+        }
+
+        [TestMethod]
+        public void ValidationMultipleElements()
+        {
+            //ToDo On progres..
+            //Act
+            var results = DiscoverValidator.ValidateMultipleEntities(_animals);
             var b = results.GetDataOfEntityType<Dog>();
-            //var a = results.GetValidDataCastedPre(results.ValidDataList);
-            //var target4 = DiscoverValidator.GetValidDate(target);
             var valid = results.GetDataOfEntityType<Dog>();
             var valid2 = results.GetValidDataOfType<Dog>();
             var valid3 = results.GetInvalidDataOfType<Dog>();
             var valid4 = results.GetNotValidatableDataOfType<Dog>();
             //Assert
+            Assert.IsNotNull(results);
+
         }
     }
 }

@@ -55,7 +55,7 @@ namespace ValidationAttributeCore.Application
             return result;
         }
 
-        public static DiscoverValidationResults ValidateMultipleEntities(IList<object> coleccion)
+        public static DiscoverValidationResults ValidateMultipleEntities<T>(IList<T> coleccion)
         {
             var results = new DiscoverValidationResults { ValidatableEntityTypes = ValidatorsDictionary.Keys.ToList() };
 
