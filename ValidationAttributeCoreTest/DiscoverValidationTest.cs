@@ -31,6 +31,7 @@ namespace ValidationAttributeCoreTest
         }
 
         [TestMethod]
+        [TestCategory("Discover Validation - One Element")]
         public void ValidationOneValidDogElement()
         {
             //Arrange
@@ -45,6 +46,7 @@ namespace ValidationAttributeCoreTest
         }
 
         [TestMethod]
+        [TestCategory("Discover Validation - One Element")]
         public void ValidationOneInvalidCatElement()
         {
             //Arrange
@@ -60,6 +62,7 @@ namespace ValidationAttributeCoreTest
         }
 
         [TestMethod]
+        [TestCategory("Discover Validation - Multiple Elements")]
         public void ValidationMultipleElementsOfOneUniqueType()
         {
             //Act
@@ -71,24 +74,29 @@ namespace ValidationAttributeCoreTest
             });
             //Assert
             Assert.IsNotNull(resultsOneEntity);
-            Assert.AreEqual(1, resultsOneEntity.OfType<ValidData<Dog>>());
-            Assert.AreEqual(1, resultsOneEntity.OfType<InvalidData<Dog>>());
+            Assert.AreEqual(1, resultsOneEntity.OfType<ValidData<Dog>>().Count());
+            Assert.AreEqual(2, resultsOneEntity.OfType<InvalidData<Dog>>().Count());
         }
 
         [TestMethod]
+        [TestCategory("Discover Validation - Multiple Elements")]
         public void ValidationMultipleElements()
         {
-            //ToDo On progres..
             //Act
             var results = DiscoverValidator.ValidateMultipleEntities(_animals);
-            var b = results.GetDataOfEntityType<Dog>();
-            var valid = results.GetDataOfEntityType<Dog>();
-            var valid2 = results.GetValidDataOfType<Dog>();
-            var valid3 = results.GetInvalidDataOfType<Dog>();
-            var valid4 = results.GetNotValidatableDataOfType<Dog>();
+
             //Assert
             Assert.IsNotNull(results);
-
+            Assert.AreEqual(3, results.GetDataOfType<Dog>().Count);
+            Assert.AreEqual(1, results.GetValidDataOfType<Dog>().Count);
+            Assert.AreEqual(2, results.GetInvalidDataOfType<Dog>().Count);
+            var a = results.GetInvalidDataOfType<Dog>();
+            var b = a.First();
+            var c = (InvalidData<Dog>) b;
+            var d = c.ValidationFailures;
+            Assert.IsNotNull(
+                ((InvalidData<Dog>) results
+                    .GetInvalidDataOfType<Dog>().First()).ValidationFailures);
         }
     }
 }

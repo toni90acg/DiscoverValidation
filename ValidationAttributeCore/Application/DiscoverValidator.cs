@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using FluentValidation.Results;
-using ValidationAttributeCore.CustomAttribute;
 using ValidationAttributeCore.GenericValidator;
 using ValidationAttributeCore.Helpers;
 using ValidationAttributeCore.Model;
@@ -18,31 +16,29 @@ namespace ValidationAttributeCore.Application
 
         static DiscoverValidator()
         {
-            ValidatorsDictionary = new Dictionary<Type, Type>();
-            LoadValidators();
+            ValidatorsDictionary = Helper.LoadValidators();
         }
         
         public static IData<T> ValidateEntity<T>(T element)
         {
-            if (ValidatorsDictionary.ContainsKey(element.GetType()))
+            if (!ValidatorsDictionary.ContainsKey(element.GetType()))
+                return CreateData(typeof(NotValidatableData<>), element);
+
+            var validatorType = ValidatorsDictionary[element.GetType()];
+
+            var validator = (IAttributeValidator) Activator.CreateInstance(validatorType);
+            var results = validator.ValidateEntity(element);
+
+            if (results.IsValid)
             {
-                var validatorType = ValidatorsDictionary[element.GetType()];
-
-                var validator = (IAttributeValidator) Activator.CreateInstance(validatorType);
-                var results = validator.ValidateEntity(element);
-
-                if (results.IsValid)
-                {
-                    return CreateData(typeof(ValidData<>), element);
-                }
-                else
-                {
-                    var data = (InvalidData<T>) CreateData(typeof(InvalidData<>), element);
-                    data.ValidationFailures = results.Errors;
-                    return data;
-                }
+                return CreateData(typeof(ValidData<>), element);
             }
-            return CreateData(typeof(NotValidatableData<>), element);
+            else
+            {
+                var data = (InvalidData<T>) CreateData(typeof(InvalidData<>), element);
+                data.ValidationFailures = results.Errors;
+                return data;
+            }
         }
 
         public static List<IData<T>> ValidateEntity<T>(List<T> elements)
@@ -57,6 +53,7 @@ namespace ValidationAttributeCore.Application
 
         public static DiscoverValidationResults ValidateMultipleEntities<T>(IList<T> coleccion)
         {
+            //ToDo Apply Strategy Pattern
             var results = new DiscoverValidationResults { ValidatableEntityTypes = ValidatorsDictionary.Keys.ToList() };
 
             foreach (var element in coleccion)
@@ -86,6 +83,7 @@ namespace ValidationAttributeCore.Application
                     {
                         var data = CreateDataObj(typeof(InvalidData<>), element, validationResult.Errors);
 
+                        results.EntityTypesWithInvalidValidations.Add(element.GetType());
                         results.InvalidDataList.Add(data);
                         results.AllDataList.Add(data);
                     }
@@ -102,24 +100,22 @@ namespace ValidationAttributeCore.Application
             return results;
         }
 
-        #region Private Methods
+        #region Internal Methods
 
-        internal static IData<T> CreateData<T>(Type typeOfData, T element)
+        internal static IData<T> CreateData<T>(Type typeOfData, T element, IList<ValidationFailure> failures = null)
         {
-            return (IData<T>) CreateDataObj(typeOfData, element);
+            return (IData<T>) CreateDataObj(typeOfData, element, failures);
         }
 
-        internal static object CreateDataObj(Type typeOfData, object element)
+        internal static object CreateDataObj(Type typeOfData, object element, IList<ValidationFailure> failures = null)
         {
             Type[] typeArgs = {element.GetType()};
             var makeme = typeOfData.MakeGenericType(typeArgs);
-            return Activator.CreateInstance(makeme, element);
-        }
 
-        internal static object CreateDataObj(Type typeOfData, object element, IList<ValidationFailure> failures)
-        {
-            Type[] typeArgs = { element.GetType() };
-            var makeme = typeOfData.MakeGenericType(typeArgs);
+            if (failures == null)
+            {
+                return Activator.CreateInstance(makeme, element);
+            }
             var ctorParams = new[]
             {
                 element,
@@ -127,22 +123,7 @@ namespace ValidationAttributeCore.Application
             };
             return Activator.CreateInstance(makeme, ctorParams);
         }
-
-        private static void LoadValidators()
-        {
-            AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
-                .Where(t => Helper.IsAssignableToGenericType(t, typeof(AbstractAttributeValidator<>)))
-                .Where(t => !t.IsAbstract && !t.IsInterface)
-                .Select(s => new
-                {
-                    attribute = s.GetCustomAttributes<ValidateEntityAttribute>().Single(),
-                    validator = s
-                })
-                .Where(e => e.attribute != null).ToList()
-                .ForEach(e => ValidatorsDictionary.Add(e.attribute.Entity, e.validator));
-        }
-
+        
         #endregion
     }
 }

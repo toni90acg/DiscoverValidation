@@ -1,4 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using ValidationAttributeCore.CustomAttribute;
+using ValidationAttributeCore.GenericValidator;
 
 namespace ValidationAttributeCore.Helpers
 {
@@ -21,6 +26,25 @@ namespace ValidationAttributeCore.Helpers
             if (baseType == null) return false;
 
             return IsAssignableToGenericType(baseType, genericType);
+        }
+
+        internal static Dictionary<Type, Type> LoadValidators()
+        {
+            var validatorsDictionary = new Dictionary<Type, Type>();
+
+            AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(t => Helper.IsAssignableToGenericType(t, typeof(AbstractAttributeValidator<>)))
+                .Where(t => !t.IsAbstract && !t.IsInterface)
+                .Select(s => new
+                {
+                    attribute = s.GetCustomAttributes<ValidateEntityAttribute>().Single(),
+                    validator = s
+                })
+                .Where(e => e.attribute != null).ToList()
+                .ForEach(e => validatorsDictionary.Add(e.attribute.Entity, e.validator));
+
+            return validatorsDictionary;
         }
     }
 }

@@ -14,6 +14,7 @@ namespace ValidationAttributeCore.Model.ValidationResults
             ValidDataList = new List<object>();
             InvalidDataList = new List<object>();
             NotValidatableEntityTypes = new List<Type>();
+            EntityTypesWithInvalidValidations = new List<Type>();
         }
 
         public IList<object> NotValidatableDataList { get; set; }
@@ -22,9 +23,10 @@ namespace ValidationAttributeCore.Model.ValidationResults
         public IList<object> AllDataList { get; set; }
 
         public IList<Type> ValidatableEntityTypes { get; set; }
+        public IList<Type> EntityTypesWithInvalidValidations { get; set; }
         public IList<Type> NotValidatableEntityTypes { get; set; }
 
-        public IList<IData<T>> GetDataOfEntityType<T>()
+        public IList<IData<T>> GetDataOfType<T>()
         {
             var result = new List<IData<T>>();
             foreach (var data in AllDataList)
@@ -39,7 +41,22 @@ namespace ValidationAttributeCore.Model.ValidationResults
             return result;
         }
 
-        private static IList<IData<T>> GetDataOfEntityType<T>(Type dataType, IList<object> dataList)
+        public IList<IData<T>> GetValidDataOfType<T>()
+        {
+            return GetDataOfType<T>(typeof(ValidData<>), ValidDataList);
+        }
+
+        public IList<IData<T>> GetInvalidDataOfType<T>()
+        {
+            return GetDataOfType<T>(typeof(InvalidData<>), InvalidDataList);
+        }
+
+        public IList<IData<T>> GetNotValidatableDataOfType<T>()
+        {
+            return GetDataOfType<T>(typeof(NotValidatableData<>), NotValidatableDataList);
+        }
+
+        private static IList<IData<T>> GetDataOfType<T>(Type dataType, IList<object> dataList)
         {
             var result = new List<IData<T>>();
             foreach (var data in dataList)
@@ -51,24 +68,12 @@ namespace ValidationAttributeCore.Model.ValidationResults
 
                 if (castedData == null) continue;
                 var entity = castedData.Entity;
-                result.Add(DiscoverValidator.CreateData(dataType, entity));
+
+                var failures = (data as InvalidData<T>)?.ValidationFailures;
+
+                result.Add(DiscoverValidator.CreateData(dataType, entity, failures));
             }
             return result;
-        }
-
-        public IList<IData<T>> GetValidDataOfType<T>()
-        {
-            return GetDataOfEntityType<T>(typeof(ValidData<>), ValidDataList);
-        }
-
-        public IList<IData<T>> GetInvalidDataOfType<T>()
-        {
-            return GetDataOfEntityType<T>(typeof(InvalidData<>), InvalidDataList);
-        }
-
-        public IList<IData<T>> GetNotValidatableDataOfType<T>()
-        {
-            return GetDataOfEntityType<T>(typeof(NotValidatableData<>), NotValidatableDataList);
         }
     }
 }
