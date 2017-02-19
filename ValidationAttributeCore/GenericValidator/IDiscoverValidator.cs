@@ -2,7 +2,7 @@
 
 namespace ValidationAttributeCore.GenericValidator
 {
-    public interface IAttributeValidator
+    internal interface IDiscoverValidator
     {
         /// <summary>
         /// Validate the entity if it has the MyValidationAttribute with a 

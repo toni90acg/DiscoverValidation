@@ -44,12 +44,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Helpers\Helper.cs" />
+    <Compile Include="Helpers\AssembliesHelper.cs" />
+    <Compile Include="Helpers\CreateInstanceHelper.cs" />
     <Compile Include="Model\ValidationResults\DiscoverValidationResults.cs" />
     <Compile Include="Application\DiscoverValidator.cs" />
     <Compile Include="CustomAttribute\ValidateEntityAttribute.cs" />
-    <Compile Include="GenericValidator\AbstractAttributeValidator.cs" />
-    <Compile Include="GenericValidator\IAttributeValidator.cs" />
+    <Compile Include="GenericValidator\AbstractDiscoverValidator.cs" />
+    <Compile Include="GenericValidator\IDiscoverValidator.cs" />
     <Compile Include="Model\Interface\IData.cs" />
     <Compile Include="Model\InvalidData.cs" />
     <Compile Include="Model\NotValidatableData.cs" />

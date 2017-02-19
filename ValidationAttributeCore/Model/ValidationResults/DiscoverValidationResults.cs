@@ -36,7 +36,7 @@ namespace ValidationAttributeCore.Model.ValidationResults
                 var castedData = data as IData<T>;
 
                 var entity = castedData.Entity;
-                result.Add(DiscoverValidator.CreateData(typeof(ValidData<>), entity));
+                result.Add(DiscoverValidator.CreateDataCasted(typeof(ValidData<>), entity));
             }
             return result;
         }
@@ -71,7 +71,7 @@ namespace ValidationAttributeCore.Model.ValidationResults
 
                 var failures = (data as InvalidData<T>)?.ValidationFailures;
 
-                result.Add(DiscoverValidator.CreateData(dataType, entity, failures));
+                result.Add(DiscoverValidator.CreateDataCasted(dataType, entity, failures));
             }
             return result;
         }
