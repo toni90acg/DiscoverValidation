@@ -100,13 +100,15 @@ namespace ValidationAttributeCoreTest
 
             //Act FluentValidation
             var time1Fv = DateTime.Now;
-
+            var dogvalidator = new DogValidation();
+            var catvalidator = new CatValidation();
+            var birdvalidator = new BirdValidation();
             var results = new List<IData<object>>();
             foreach (var animal in _animals)
             {
                 if (animal.GetType() == typeof(Dog))
                 {
-                    var dogvalidator = new DogValidation();
+
                     var targetFv = dogvalidator.Validate(animal as Dog);
                     if (targetFv.IsValid)
                     {
@@ -119,7 +121,7 @@ namespace ValidationAttributeCoreTest
                 }
                 if (animal.GetType() == typeof(Cat))
                 {
-                    var catvalidator = new CatValidation();
+          
                     var targetFv = catvalidator.Validate(animal as Cat);
                     if (targetFv.IsValid)
                     {
@@ -132,7 +134,7 @@ namespace ValidationAttributeCoreTest
                 }
                 if (animal.GetType() == typeof(Bird))
                 {
-                    var birdvalidator = new BirdValidation();
+                    
                     var targetFv = birdvalidator.Validate(animal as Bird);
                     if (targetFv.IsValid)
                     {

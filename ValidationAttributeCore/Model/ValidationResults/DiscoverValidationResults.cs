@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using ValidationAttributeCore.Application;
+using ValidationAttributeCore.Helpers;
 using ValidationAttributeCore.Model.Interface;
 
 namespace ValidationAttributeCore.Model.ValidationResults
@@ -36,7 +37,7 @@ namespace ValidationAttributeCore.Model.ValidationResults
                 var castedData = data as IData<T>;
 
                 var entity = castedData.Entity;
-                result.Add(DiscoverValidator.CreateDataCasted(typeof(ValidData<>), entity));
+                result.Add(CreateInstanceHelper.CreateDataCasted(typeof(ValidData<>), entity));
             }
             return result;
         }
@@ -71,7 +72,7 @@ namespace ValidationAttributeCore.Model.ValidationResults
 
                 var failures = (data as InvalidData<T>)?.ValidationFailures;
 
-                result.Add(DiscoverValidator.CreateDataCasted(dataType, entity, failures));
+                result.Add(CreateInstanceHelper.CreateDataCasted(dataType, entity, failures));
             }
             return result;
         }

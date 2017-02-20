@@ -13,10 +13,12 @@ namespace ValidationAttributeCore.Application
     public static class DiscoverValidator
     {
         internal static Dictionary<Type, Type> ValidatorsDictionary;
+        internal static Dictionary<Type, IDiscoverValidator> ValidatorsInstancesDictionary;
 
         static DiscoverValidator()
         {
             ValidatorsDictionary = AssembliesHelper.LoadValidators();
+            ValidatorsInstancesDictionary = new Dictionary<Type, IDiscoverValidator>();
         }
         
         public static IData<T> ValidateEntity<T>(T element)
@@ -53,8 +55,10 @@ namespace ValidationAttributeCore.Application
 
         public static DiscoverValidationResults ValidateMultipleEntities<T>(IList<T> coleccion)
         {
-            //ToDo Apply Strategy Pattern
+            //ToDo Apply Strategy Pattern In progress
             var results = new DiscoverValidationResults { ValidatableEntityTypes = ValidatorsDictionary.Keys.ToList() };
+
+            //var strategyHandler = new StrategyHanlder(results.ValidatableEntityTypes);
 
             foreach (var element in coleccion)
             {
@@ -62,7 +66,20 @@ namespace ValidationAttributeCore.Application
                 {
                     var validatorType = ValidatorsDictionary[element.GetType()];
 
-                    var validator = (IDiscoverValidator)Activator.CreateInstance(validatorType);
+                    IDiscoverValidator validator;
+                    
+                    if (ValidatorsInstancesDictionary.ContainsKey(element.GetType()))
+                    {
+                        validator = ValidatorsInstancesDictionary[element.GetType()];
+                    }
+                    else
+                    {
+                        
+                        validator = (IDiscoverValidator)Activator.CreateInstance(validatorType);
+                        ValidatorsInstancesDictionary.Add(element.GetType(), validator);
+                    }
+
+                    
                     var validationResult = validator.ValidateEntity(element);
 
                     if (validationResult == null)
@@ -99,5 +116,39 @@ namespace ValidationAttributeCore.Application
 
             return results;
         }
+    }
+
+    public class StrategyHanlder
+    {
+        Dictionary<Func<Type,bool>, IValidatableStrategy> strategiesValidatablesDictionary = new Dictionary<Func<Type, bool>, IValidatableStrategy>();
+        Dictionary<Func<ValidationResult, bool>, IValidatableStrategy> strategiesCreateDataDictionary = new Dictionary<Func<ValidationResult, bool>, IValidatableStrategy>();
+        public StrategyHanlder(IList<Type> validatableEntityTypes)
+        {
+            strategiesCreateDataDictionary = new Dictionary<Func<ValidationResult, bool>, IValidatableStrategy>
+            {
+                {validationResult => validationResult == null, new CreateNotValidatableDataStrategy()},
+                {validationResult => validationResult?.IsValid == true, new CreateValidDataStrategy()},
+                {validationResult => validationResult?.IsValid == false, new CreateInvalidDataStrategy()}
+            };
+
+            strategiesValidatablesDictionary = new Dictionary<Func<Type, bool>, IValidatableStrategy>();
+            strategiesValidatablesDictionary.Add(entityType => validatableEntityTypes.Contains(entityType), new CreateInvalidDataStrategy());
+        }
+    }
+
+    public class CreateInvalidDataStrategy : IValidatableStrategy
+    {
+    }
+
+    public class CreateValidDataStrategy : IValidatableStrategy
+    {
+    }
+
+    public class CreateNotValidatableDataStrategy : IValidatableStrategy
+    {
+    }
+
+    internal interface IValidatableStrategy
+    {
     }
 }
