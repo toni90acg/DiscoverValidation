@@ -7,7 +7,7 @@ using DiscoverValidationCore.GenericValidator;
 
 namespace DiscoverValidationCore.Helpers
 {
-    internal static class AssembliesHelper
+    public static class AssembliesHelper
     {
         internal static Dictionary<Type, Type> LoadValidators()
         {

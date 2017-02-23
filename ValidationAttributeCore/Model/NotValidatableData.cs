@@ -4,7 +4,7 @@ using FluentValidation.Results;
 
 namespace DiscoverValidationCore.Model
 {
-    internal class NotValidatableData<T> : IData<T>
+    public class NotValidatableData<T> : IData<T>
     {
         public T Entity { get; set; }
 

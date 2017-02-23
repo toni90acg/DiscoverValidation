@@ -5,7 +5,7 @@ using DiscoverValidationCore.Model.Interface;
 
 namespace DiscoverValidationCore.Model.ValidationResults
 {
-    internal class DiscoverValidationResults
+    public class DiscoverValidationResults
     {
         public IList<object> NotValidatableDataList { get; set; }
         public IList<object> ValidDataList { get; set; }

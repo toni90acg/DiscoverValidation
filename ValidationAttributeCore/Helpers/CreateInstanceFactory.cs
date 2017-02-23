@@ -10,7 +10,7 @@ using FluentValidation.Results;
 
 namespace DiscoverValidationCore.Helpers
 {
-    internal static class CreateInstanceFactory
+    public static class CreateInstanceFactory
     {
         internal static IData<T> CreateDataCasted<T>(Type typeOfData, T element, IList<ValidationFailure> failures = null)
         {

@@ -4,7 +4,7 @@ using FluentValidation.Results;
 
 namespace DiscoverValidationCore.Model
 {
-    internal class ValidData<T> : IData<T>
+    public class ValidData<T> : IData<T>
     {
         public T Entity { get; set; }
 

@@ -2,7 +2,7 @@
 
 namespace DiscoverValidationCore.GenericValidator
 {
-    internal interface IDiscoverValidator
+    public interface IDiscoverValidator
     {
         ValidationResult ValidateEntity(object entity);
     }
