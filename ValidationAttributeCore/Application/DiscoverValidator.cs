@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using FluentValidation.Results;
 using ValidationAttributeCore.GenericValidator;
 using ValidationAttributeCore.Helpers;
 using ValidationAttributeCore.Model;
+using ValidationAttributeCore.Model.Context;
 using ValidationAttributeCore.Model.Interface;
 using ValidationAttributeCore.Model.ValidationResults;
 
@@ -12,37 +12,47 @@ namespace ValidationAttributeCore.Application
 {
     public static class DiscoverValidator
     {
-        internal static Dictionary<Type, Type> ValidatorsDictionary;
-        internal static Dictionary<Type, IDiscoverValidator> ValidatorsInstancesDictionary;
+        internal static DiscoverValidatorContext Context;
 
         static DiscoverValidator()
         {
-            ValidatorsDictionary = AssembliesHelper.LoadValidators();
-            ValidatorsInstancesDictionary = new Dictionary<Type, IDiscoverValidator>();
+            Context = CreateInstanceFactory.CreateDiscoverValidationContext();
         }
         
+        /// <summary>
+        /// Validate one unique entity
+        /// </summary>
+        /// <typeparam name="T">Type of the entity to validate</typeparam>
+        /// <param name="element">Entity to validate</param>
+        /// <returns>Returns an IData of type T</returns>
         public static IData<T> ValidateEntity<T>(T element)
         {
-            if (!ValidatorsDictionary.ContainsKey(element.GetType()))
-                return CreateInstanceHelper.CreateDataCasted(typeof(NotValidatableData<>), element);
+            if (!Context.AllValidatorsDictionary.ContainsKey(element.GetType()))
+                return CreateInstanceFactory.CreateDataCasted(typeof(NotValidatableData<>), element);
 
-            var validatorType = ValidatorsDictionary[element.GetType()];
+            var validatorType = Context.AllValidatorsDictionary[element.GetType()];
 
             var validator = (IDiscoverValidator) Activator.CreateInstance(validatorType);
             var results = validator.ValidateEntity(element);
 
             if (results.IsValid)
             {
-                return CreateInstanceHelper.CreateDataCasted(typeof(ValidData<>), element);
+                return CreateInstanceFactory.CreateDataCasted(typeof(ValidData<>), element);
             }
             else
             {
-                var data = (InvalidData<T>)CreateInstanceHelper.CreateDataCasted(typeof(InvalidData<>), element);
+                var data = (InvalidData<T>)CreateInstanceFactory.CreateDataCasted(typeof(InvalidData<>), element);
                 data.ValidationFailures = results.Errors;
                 return data;
             }
         }
 
+        /// <summary>
+        /// Validate a list of entities of one unique type
+        /// </summary>
+        /// <typeparam name="T">Type of the entities to validate</typeparam>
+        /// <param name="elements">Entities to validate</param>
+        /// <returns>Returns a list of IData of type T</returns>
         public static List<IData<T>> ValidateEntity<T>(List<T> elements)
         {
             var result = new List<IData<T>>();
@@ -53,102 +63,23 @@ namespace ValidationAttributeCore.Application
             return result;
         }
 
-        public static DiscoverValidationResults ValidateMultipleEntities<T>(IList<T> coleccion)
+        /// <summary>
+        /// Validate a list of entities of any type
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="entities">Entities to validate</param>
+        /// <returns>Returns a DiscoverValidationResults with all the validations results</returns>
+        public static DiscoverValidationResults ValidateMultipleEntities<T>(IList<T> entities)
         {
-            //ToDo Apply Strategy Pattern In progress
-            var results = new DiscoverValidationResults { ValidatableEntityTypes = ValidatorsDictionary.Keys.ToList() };
+            Context = CreateInstanceFactory.CreateDiscoverValidationResults(Context);
+            var validatorStrategyHandler = CreateInstanceFactory.CreateValidatorStrategyHandler<T>();
 
-            //var strategyHandler = new StrategyHanlder(results.ValidatableEntityTypes);
-
-            foreach (var element in coleccion)
+            entities.ToList().ForEach(element =>
             {
-                if (ValidatorsDictionary.ContainsKey(element.GetType()))
-                {
-                    var validatorType = ValidatorsDictionary[element.GetType()];
+                validatorStrategyHandler.UpdateValidationResuls(Context, element);
+            });
 
-                    IDiscoverValidator validator;
-                    
-                    if (ValidatorsInstancesDictionary.ContainsKey(element.GetType()))
-                    {
-                        validator = ValidatorsInstancesDictionary[element.GetType()];
-                    }
-                    else
-                    {
-                        
-                        validator = (IDiscoverValidator)Activator.CreateInstance(validatorType);
-                        ValidatorsInstancesDictionary.Add(element.GetType(), validator);
-                    }
-
-                    
-                    var validationResult = validator.ValidateEntity(element);
-
-                    if (validationResult == null)
-                    {
-                        var data = CreateInstanceHelper.CreateData(typeof(NotValidatableData<>), element);
-                        results.NotValidatableEntityTypes.Add(element.GetType());
-                        results.NotValidatableDataList.Add(data);
-                        results.AllDataList.Add(data);
-                    }
-
-                    else if (validationResult.IsValid)
-                    {
-                        var data = CreateInstanceHelper.CreateData(typeof(ValidData<>), element);
-                        results.ValidDataList.Add(data);
-                        results.AllDataList.Add(data);
-                    }
-                    else
-                    {
-                        var data = CreateInstanceHelper.CreateData(typeof(InvalidData<>), element, validationResult.Errors);
-
-                        results.EntityTypesWithInvalidValidations.Add(element.GetType());
-                        results.InvalidDataList.Add(data);
-                        results.AllDataList.Add(data);
-                    }
-                }
-                else
-                {
-                    var data = CreateInstanceHelper.CreateData(typeof(NotValidatableData<>), element);
-                    results.NotValidatableEntityTypes.Add(element.GetType());
-                    results.NotValidatableDataList.Add(data);
-                    results.AllDataList.Add(data);
-                }
-            }
-
-            return results;
+            return Context.DiscoverValidationResults;
         }
-    }
-
-    public class StrategyHanlder
-    {
-        Dictionary<Func<Type,bool>, IValidatableStrategy> strategiesValidatablesDictionary = new Dictionary<Func<Type, bool>, IValidatableStrategy>();
-        Dictionary<Func<ValidationResult, bool>, IValidatableStrategy> strategiesCreateDataDictionary = new Dictionary<Func<ValidationResult, bool>, IValidatableStrategy>();
-        public StrategyHanlder(IList<Type> validatableEntityTypes)
-        {
-            strategiesCreateDataDictionary = new Dictionary<Func<ValidationResult, bool>, IValidatableStrategy>
-            {
-                {validationResult => validationResult == null, new CreateNotValidatableDataStrategy()},
-                {validationResult => validationResult?.IsValid == true, new CreateValidDataStrategy()},
-                {validationResult => validationResult?.IsValid == false, new CreateInvalidDataStrategy()}
-            };
-
-            strategiesValidatablesDictionary = new Dictionary<Func<Type, bool>, IValidatableStrategy>();
-            strategiesValidatablesDictionary.Add(entityType => validatableEntityTypes.Contains(entityType), new CreateInvalidDataStrategy());
-        }
-    }
-
-    public class CreateInvalidDataStrategy : IValidatableStrategy
-    {
-    }
-
-    public class CreateValidDataStrategy : IValidatableStrategy
-    {
-    }
-
-    public class CreateNotValidatableDataStrategy : IValidatableStrategy
-    {
-    }
-
-    internal interface IValidatableStrategy
-    {
     }
 }

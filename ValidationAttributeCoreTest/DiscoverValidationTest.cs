@@ -84,7 +84,7 @@ namespace ValidationAttributeCoreTest
         {
             //Act
             var results = DiscoverValidator.ValidateMultipleEntities(_animals);
-
+            
             //Assert
             Assert.IsNotNull(results);
             Assert.AreEqual(3, results.GetDataOfType<Dog>().Count);

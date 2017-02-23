@@ -44,8 +44,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Strategy\Strategies\CreateInvalidDataStrategy.cs" />
+    <Compile Include="Strategy\Strategies\CreateNotValidatableDataStrategy.cs" />
+    <Compile Include="Strategy\Strategies\CreateValidDataStrategy.cs" />
+    <Compile Include="Strategy\Interface\IValidatableStrategy.cs" />
+    <Compile Include="Strategy\ValidatorStrategyHanlder.cs" />
     <Compile Include="Helpers\AssembliesHelper.cs" />
-    <Compile Include="Helpers\CreateInstanceHelper.cs" />
+    <Compile Include="Helpers\CreateInstanceFactory.cs" />
+    <Compile Include="Model\Context\DiscoverValidatorContext.cs" />
     <Compile Include="Model\ValidationResults\DiscoverValidationResults.cs" />
     <Compile Include="Application\DiscoverValidator.cs" />
     <Compile Include="CustomAttribute\ValidateEntityAttribute.cs" />
