@@ -4,7 +4,7 @@ using FluentValidation.Results;
 
 namespace DiscoverValidationCore.Model.Interface
 {
-    internal interface IData<T>
+    public interface IData<T>
     {
         T Entity { get; set; }
 
