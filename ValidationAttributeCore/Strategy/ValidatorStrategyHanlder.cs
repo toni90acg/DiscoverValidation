@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DiscoverValidationCore.GenericValidator;
+using DiscoverValidationCore.Model.Context;
+using DiscoverValidationCore.Strategy.Interface;
+using DiscoverValidationCore.Strategy.Strategies;
 using FluentValidation.Results;
-using ValidationAttributeCore.GenericValidator;
-using ValidationAttributeCore.Model.Context;
-using ValidationAttributeCore.Strategy.Interface;
-using ValidationAttributeCore.Strategy.Strategies;
 
-namespace ValidationAttributeCore.Strategy
+namespace DiscoverValidationCore.Strategy
 {
     public class ValidatorStrategyHanlder<T>
     {

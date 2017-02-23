@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DiscoverValidationCore.Application;
+using DiscoverValidationCore.Model;
+using DiscoverValidationCore.Model.Interface;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ValidationAttributeCore.Application;
-using ValidationAttributeCore.Model;
-using ValidationAttributeCore.Model.Interface;
 using ValidationAttributeCoreTest.Model.Animals;
 using ValidationAttributeCoreTest.Model.Animals.Interface;
 using ValidationAttributeCoreTest.Validations;

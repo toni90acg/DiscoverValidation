@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DiscoverValidationCore.GenericValidator;
+using DiscoverValidationCore.Model.Context;
+using DiscoverValidationCore.Model.Interface;
+using DiscoverValidationCore.Model.ValidationResults;
+using DiscoverValidationCore.Strategy;
 using FluentValidation.Results;
-using ValidationAttributeCore.GenericValidator;
-using ValidationAttributeCore.Model.Context;
-using ValidationAttributeCore.Model.Interface;
-using ValidationAttributeCore.Model.ValidationResults;
-using ValidationAttributeCore.Strategy;
 
-namespace ValidationAttributeCore.Helpers
+namespace DiscoverValidationCore.Helpers
 {
     internal static class CreateInstanceFactory
     {

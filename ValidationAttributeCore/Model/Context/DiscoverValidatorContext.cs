@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using ValidationAttributeCore.GenericValidator;
-using ValidationAttributeCore.Model.ValidationResults;
+using DiscoverValidationCore.GenericValidator;
+using DiscoverValidationCore.Model.ValidationResults;
 
-namespace ValidationAttributeCore.Model.Context
+namespace DiscoverValidationCore.Model.Context
 {
     public class DiscoverValidatorContext
     {

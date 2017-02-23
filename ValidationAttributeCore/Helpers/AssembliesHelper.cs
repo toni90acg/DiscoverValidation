@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using ValidationAttributeCore.CustomAttribute;
-using ValidationAttributeCore.GenericValidator;
+using DiscoverValidationCore.CustomAttribute;
+using DiscoverValidationCore.GenericValidator;
 
-namespace ValidationAttributeCore.Helpers
+namespace DiscoverValidationCore.Helpers
 {
     internal static class AssembliesHelper
     {

@@ -1,7 +1,7 @@
 using FluentValidation;
 using FluentValidation.Results;
 
-namespace ValidationAttributeCore.GenericValidator
+namespace DiscoverValidationCore.GenericValidator
 {
     public abstract class AbstractDiscoverValidator<T> : AbstractValidator<T>, IDiscoverValidator
     {

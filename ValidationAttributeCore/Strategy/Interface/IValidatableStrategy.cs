@@ -1,7 +1,7 @@
-﻿using FluentValidation.Results;
-using ValidationAttributeCore.Model.Context;
+﻿using DiscoverValidationCore.Model.Context;
+using FluentValidation.Results;
 
-namespace ValidationAttributeCore.Strategy.Interface
+namespace DiscoverValidationCore.Strategy.Interface
 {
     public interface IValidatableStrategy
     {

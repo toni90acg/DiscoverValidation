@@ -1,4 +1,4 @@
-using ValidationAttributeCore.CustomAttribute;
+using DiscoverValidationCore.CustomAttribute;
 using ValidationAttributeCoreTest.Model.Animals.Interface;
 using ValidationAttributeCoreTest.Validations;
 

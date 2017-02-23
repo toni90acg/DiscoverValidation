@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ValidationAttributeCore.GenericValidator;
-using ValidationAttributeCore.Helpers;
-using ValidationAttributeCore.Model;
-using ValidationAttributeCore.Model.Context;
-using ValidationAttributeCore.Model.Interface;
-using ValidationAttributeCore.Model.ValidationResults;
+using DiscoverValidationCore.GenericValidator;
+using DiscoverValidationCore.Helpers;
+using DiscoverValidationCore.Model;
+using DiscoverValidationCore.Model.Context;
+using DiscoverValidationCore.Model.Interface;
+using DiscoverValidationCore.Model.ValidationResults;
 
-namespace ValidationAttributeCore.Application
+namespace DiscoverValidationCore.Application
 {
     public static class DiscoverValidator
     {

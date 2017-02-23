@@ -1,16 +1,16 @@
 using System;
 using System.Collections.Generic;
-using ValidationAttributeCore.Helpers;
-using ValidationAttributeCore.Model.Interface;
+using DiscoverValidationCore.Helpers;
+using DiscoverValidationCore.Model.Interface;
 
-namespace ValidationAttributeCore.Model.ValidationResults
+namespace DiscoverValidationCore.Model.ValidationResults
 {
     public class DiscoverValidationResults
     {
-        protected IList<object> NotValidatableDataList { get; set; }
-        protected IList<object> ValidDataList { get; set; }
-        protected IList<object> InvalidDataList { get; set; }
-        protected IList<object> AllDataList { get; set; }
+        public IList<object> NotValidatableDataList { get; set; }
+        public IList<object> ValidDataList { get; set; }
+        public IList<object> InvalidDataList { get; set; }
+        public IList<object> AllDataList { get; set; }
 
         public DiscoverValidationResults()
         {

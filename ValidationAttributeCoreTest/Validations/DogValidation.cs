@@ -1,6 +1,6 @@
+using DiscoverValidationCore.CustomAttribute;
+using DiscoverValidationCore.GenericValidator;
 using FluentValidation;
-using ValidationAttributeCore.CustomAttribute;
-using ValidationAttributeCore.GenericValidator;
 using ValidationAttributeCoreTest.Model.Animals;
 
 namespace ValidationAttributeCoreTest.Validations

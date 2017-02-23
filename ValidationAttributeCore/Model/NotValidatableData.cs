@@ -1,6 +1,8 @@
-﻿using ValidationAttributeCore.Model.Interface;
+﻿using System.Collections.Generic;
+using DiscoverValidationCore.Model.Interface;
+using FluentValidation.Results;
 
-namespace ValidationAttributeCore.Model
+namespace DiscoverValidationCore.Model
 {
     public class NotValidatableData<T> : IData<T>
     {
@@ -9,6 +11,16 @@ namespace ValidationAttributeCore.Model
         public NotValidatableData(T entity)
         {
             Entity = entity;
+        }
+
+        public bool? IsValid()
+        {
+            return null;
+        }
+
+        public IList<ValidationFailure> GetValidationFailures()
+        {
+            return null;
         }
     }
 }

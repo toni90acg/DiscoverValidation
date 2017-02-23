@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using DiscoverValidationCore.Application;
+using DiscoverValidationCore.Model;
+using FluentValidation.Results;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ValidationAttributeCore.Application;
-using ValidationAttributeCore.Model;
 using ValidationAttributeCoreTest.Model.Animals;
 
 namespace ValidationAttributeCoreTest
@@ -54,6 +56,8 @@ namespace ValidationAttributeCoreTest
 
             //Act
             var target = DiscoverValidator.ValidateEntity(cat);
+            var valid = target.IsValid();
+            var validationFailures = target.GetValidationFailures();
 
             //Assert
             Assert.IsNotNull(target);
@@ -72,6 +76,18 @@ namespace ValidationAttributeCoreTest
                 new Dog("", 4, false, "Mammal"),
                 new Dog("Bobby", 8, true, "Mammal"),
             });
+
+            var allValidData = resultsOneEntity.OfType<ValidData<Dog>>();
+            var allInvalidData = resultsOneEntity.OfType<InvalidData<Dog>>();
+
+
+            var allNotValidatableData = resultsOneEntity.OfType<NotValidatableData<Dog>>();
+
+            allNotValidatableData.ToList().ForEach(data =>
+            {
+                var entity = data.Entity;
+                //Do whatever you want
+            });
             //Assert
             Assert.IsNotNull(resultsOneEntity);
             Assert.AreEqual(1, resultsOneEntity.OfType<ValidData<Dog>>().Count());
@@ -83,7 +99,17 @@ namespace ValidationAttributeCoreTest
         public void ValidationMultipleElements()
         {
             //Act
-            var results = DiscoverValidator.ValidateMultipleEntities(_animals);
+            var results = DiscoverValidator.ValidateMultipleEntities(_animals); // Animals is a List<IAnimal>
+
+           
+            var allresultsOfDogs = results.GetDataOfType<Dog>();
+            allresultsOfDogs.ToList().ForEach(data =>
+            {
+                var entity = data.Entity;
+                //Do whatever you want
+            });
+            var allInvalidDataOfCats = results.GetInvalidDataOfType<Cat>();
+            var allNotValidatableDataOfBigFoot = results.GetNotValidatableDataOfType<BigFoot>();
             
             //Assert
             Assert.IsNotNull(results);

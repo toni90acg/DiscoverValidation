@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ValidationAttributeCore.CustomAttribute
+namespace DiscoverValidationCore.CustomAttribute
 {
     public class ValidateEntityAttribute : Attribute
     {

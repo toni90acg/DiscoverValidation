@@ -7,8 +7,8 @@
     <ProjectGuid>{4768A635-DF37-48D1-8E00-3AD0B209DE79}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ValidationAttributeCore</RootNamespace>
-    <AssemblyName>ValidationAttributeCore</AssemblyName>
+    <RootNamespace>DiscoverValidationCore</RootNamespace>
+    <AssemblyName>DiscoverValidationCore</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

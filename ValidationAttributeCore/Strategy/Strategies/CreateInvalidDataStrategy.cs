@@ -1,10 +1,10 @@
+using DiscoverValidationCore.Helpers;
+using DiscoverValidationCore.Model;
+using DiscoverValidationCore.Model.Context;
+using DiscoverValidationCore.Strategy.Interface;
 using FluentValidation.Results;
-using ValidationAttributeCore.Helpers;
-using ValidationAttributeCore.Model;
-using ValidationAttributeCore.Model.Context;
-using ValidationAttributeCore.Strategy.Interface;
 
-namespace ValidationAttributeCore.Strategy.Strategies
+namespace DiscoverValidationCore.Strategy.Strategies
 {
     public class CreateInvalidDataStrategy : IValidatableStrategy
     {

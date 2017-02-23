@@ -1,6 +1,6 @@
 ﻿using FluentValidation.Results;
 
-namespace ValidationAttributeCore.GenericValidator
+namespace DiscoverValidationCore.GenericValidator
 {
     internal interface IDiscoverValidator
     {

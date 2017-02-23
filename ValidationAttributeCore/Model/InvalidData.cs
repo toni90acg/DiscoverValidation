@@ -1,12 +1,13 @@
 using System.Collections.Generic;
+using DiscoverValidationCore.Model.Interface;
 using FluentValidation.Results;
-using ValidationAttributeCore.Model.Interface;
 
-namespace ValidationAttributeCore.Model
+namespace DiscoverValidationCore.Model
 {
     public class InvalidData<T> : IData<T>
     {
         public T Entity { get; set; }
+
         public IList<ValidationFailure> ValidationFailures { get; set; }
 
         public InvalidData(T entity)
@@ -18,6 +19,16 @@ namespace ValidationAttributeCore.Model
         {
             Entity = entity;
             ValidationFailures = validationFailures;
+        }
+
+        public bool? IsValid()
+        {
+            return false;
+        }
+
+        public IList<ValidationFailure> GetValidationFailures()
+        {
+            return ValidationFailures;
         }
     }
 }
