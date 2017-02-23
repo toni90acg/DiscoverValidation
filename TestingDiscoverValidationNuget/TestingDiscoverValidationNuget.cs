@@ -6,12 +6,13 @@ using ValidationAttributeTest.Model.Animals;
 namespace TestingDiscoverValidationNuget
 {
     [TestClass]
-    public class UnitTest1
+    public class TestingDiscoverValidationNuget
     {
         [TestMethod]
-        public void TestMethod1()
+        public void DiscoverValidationNugetTest()
         {
             var results = DiscoverValidator.ValidateEntity(new Dog("Max", 6, false, "Mammal"));
+            Assert.IsNotNull(results);
         }
     }
 }
