@@ -1,15 +1,14 @@
 ﻿using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("ValidationAttributeCore")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("DiscoverValidationCore")]
+[assembly: AssemblyDescription("It help us to validate any entity without instance any validator")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ValidationAttributeCore")]
+[assembly: AssemblyCompany("Antonio Cárdenas")]
+[assembly: AssemblyProduct("DiscoverValidationCore")]
 [assembly: AssemblyCopyright("Copyright ©  2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
