@@ -5,7 +5,7 @@ using DiscoverValidationCore.Model.ValidationResults;
 
 namespace DiscoverValidationCore.Model.Context
 {
-    public class DiscoverValidatorContext
+    internal class DiscoverValidatorContext
     {
         internal Dictionary<Type, Type> AllValidatorsDictionary;
         internal Dictionary<Type, IDiscoverValidator> ValidatorsInstancesDictionary;
