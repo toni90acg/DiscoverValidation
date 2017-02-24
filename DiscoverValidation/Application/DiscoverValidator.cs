@@ -27,24 +27,26 @@ namespace DiscoverValidation.Application
         /// <returns>Returns an IData of type T</returns>
         public static IData<T> ValidateEntity<T>(T element)
         {
-            if (!DVcontext.AllValidatorsDictionary.ContainsKey(element.GetType()))
-                return CreateInstanceFactory.CreateDataCasted(typeof(NotValidatableData<>), element);
+            var validatorStrategyHandler = CreateInstanceFactory.CreateValidatorStrategyHandler<T>();
+            return validatorStrategyHandler.ValidateOneTypeEntity<T>(element, DVcontext);
+            //if (!DVcontext.AllValidatorsDictionary.ContainsKey(element.GetType()))
+            //    return CreateInstanceFactory.CreateDataCasted(typeof(NotValidatableData<>), element);
 
-            var validatorType = DVcontext.AllValidatorsDictionary[element.GetType()];
+            //var validatorType = DVcontext.AllValidatorsDictionary[element.GetType()];
 
-            var validator = (IDiscoverValidator) Activator.CreateInstance(validatorType);
-            var results = validator.ValidateEntity(element);
+            //var validator = (IDiscoverValidator) Activator.CreateInstance(validatorType);
+            //var results = validator.ValidateEntity(element);
 
-            if (results.IsValid)
-            {
-                return CreateInstanceFactory.CreateDataCasted(typeof(ValidData<>), element);
-            }
-            else
-            {
-                var data = (InvalidData<T>)CreateInstanceFactory.CreateDataCasted(typeof(InvalidData<>), element);
-                data.ValidationFailures = results.Errors;
-                return data;
-            }
+            //if (results.IsValid)
+            //{
+            //    return CreateInstanceFactory.CreateDataCasted(typeof(ValidData<>), element);
+            //}
+            //else
+            //{
+            //    var data = (InvalidData<T>)CreateInstanceFactory.CreateDataCasted(typeof(InvalidData<>), element);
+            //    data.ValidationFailures = results.Errors;
+            //    return data;
+            //}
         }
 
         /// <summary>

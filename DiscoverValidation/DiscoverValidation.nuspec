@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>DiscoverValidation</id>
+    <version>1.0.2</version>
+    <title>DiscoverValidation</title>
+    <authors>Antonio Cárdenas</authors>
+    <owners>Antonio Cárdenas</owners>
+    <projectUrl>https://github.com/toni90acg/DiscoverValidation</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>It help us to validate any entity without instance any validator</description>
+    <releaseNotes>Upgrade the FluentValidation version needed</releaseNotes>
+    <copyright>Copyright 2017</copyright>
+    <tags>auto discover validation validator validate</tags>
+  </metadata>
+</package>

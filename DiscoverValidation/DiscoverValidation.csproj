@@ -58,7 +58,7 @@
     <Compile Include="Model\ValidData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Strategy\Interface\IValidatableStrategy.cs" />
-    <Compile Include="Strategy\Strategies\CreateInvalidDataStrategy.cs" />
+    <Compile Include="Strategy\Strategies\CreateInvalidMultipleDataStrategy.cs" />
     <Compile Include="Strategy\Strategies\CreateNotValidatableDataStrategy.cs" />
     <Compile Include="Strategy\Strategies\CreateValidDataStrategy.cs" />
     <Compile Include="Strategy\ValidatorStrategyHanlder.cs" />
