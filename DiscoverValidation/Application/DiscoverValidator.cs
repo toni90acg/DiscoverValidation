@@ -12,11 +12,11 @@ namespace DiscoverValidation.Application
 {
     public static class DiscoverValidator
     {
-        internal static DiscoverValidatorContext Context;
+        internal static DiscoverValidatorContext DVcontext;
 
         static DiscoverValidator()
         {
-            Context = CreateInstanceFactory.CreateDiscoverValidationContext();
+            DVcontext = CreateInstanceFactory.CreateDiscoverValidationContext();
         }
         
         /// <summary>
@@ -27,10 +27,10 @@ namespace DiscoverValidation.Application
         /// <returns>Returns an IData of type T</returns>
         public static IData<T> ValidateEntity<T>(T element)
         {
-            if (!Context.AllValidatorsDictionary.ContainsKey(element.GetType()))
+            if (!DVcontext.AllValidatorsDictionary.ContainsKey(element.GetType()))
                 return CreateInstanceFactory.CreateDataCasted(typeof(NotValidatableData<>), element);
 
-            var validatorType = Context.AllValidatorsDictionary[element.GetType()];
+            var validatorType = DVcontext.AllValidatorsDictionary[element.GetType()];
 
             var validator = (IDiscoverValidator) Activator.CreateInstance(validatorType);
             var results = validator.ValidateEntity(element);
@@ -66,15 +66,15 @@ namespace DiscoverValidation.Application
         /// <returns>Returns a DiscoverValidationResults with all the validations results</returns>
         public static DiscoverValidationResults ValidateMultipleEntities<T>(IList<T> entities)
         {
-            Context = CreateInstanceFactory.CreateDiscoverValidationResults(Context);
+            DVcontext = CreateInstanceFactory.CreateDiscoverValidationResults(DVcontext);
             var validatorStrategyHandler = CreateInstanceFactory.CreateValidatorStrategyHandler<T>();
 
             entities.ToList().ForEach(element =>
             {
-                validatorStrategyHandler.UpdateValidationResuls(Context, element);
+                validatorStrategyHandler.UpdateValidationResuls(DVcontext, element);
             });
 
-            return Context.DiscoverValidationResults;
+            return DVcontext.DiscoverValidationResults;
         }
     }
 }
