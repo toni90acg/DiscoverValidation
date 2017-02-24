@@ -5,6 +5,22 @@ If you like FluentValidation you'd love this!
 
 Really simple to use.
 
+First of all, you have to create a validator for your entity like in FluentValidation:
+
+    public class DogValidation : AbstractDiscoverValidator<Dog>
+    {
+        public DogValidation()
+        {
+            RuleFor(dog => dog.Type).NotEmpty().WithMessage("Please specify a type");
+            RuleFor(dog => dog.Name).NotEmpty().WithMessage("Please specify a name");
+            RuleFor(dog => dog.Age).GreaterThan(-1).WithMessage("Please specify a valid age");
+            RuleFor(dog => dog.CanFly).NotEqual(true).WithMessage("Dogs can't fly");
+        }
+    }    
+And you won't have to instanciate it because DiscoverValidation will do it for you.
+
+Now, let's see how to validate an entity.
+
 For one unique entity:
 
             var cat = new Cat("Max", 1, true, "Mammal");
