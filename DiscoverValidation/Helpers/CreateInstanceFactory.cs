@@ -24,7 +24,16 @@ namespace DiscoverValidation.Helpers
 
             if (failures == null)
             {
-                return Activator.CreateInstance(makeme, element);
+                try
+                {
+                    return Activator.CreateInstance(makeme, element);
+                }
+                catch (Exception exception)
+                {
+                    throw new DiscoverValidationCreatingDataException(
+                        $"Error creating an instance of {makeme} for the entity of type {element.GetType().Name}",
+                        exception);
+                }
             }
             var ctorParams = new[]
             {
@@ -56,8 +65,16 @@ namespace DiscoverValidation.Helpers
 
         internal static ValidatorStrategyHanlder<T> CreateValidatorStrategyHandler<T>()
         {
-            return new ValidatorStrategyHanlder<T>(); ;
+            return new ValidatorStrategyHanlder<T>();
         }
 
+    }
+
+    internal class DiscoverValidationCreatingDataException : Exception
+    {
+        public DiscoverValidationCreatingDataException(string message,
+            Exception innerException) : base(message, innerException)
+        {
+        }
     }
 }
