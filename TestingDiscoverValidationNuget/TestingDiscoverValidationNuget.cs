@@ -1,7 +1,6 @@
-﻿using System;
-using DiscoverValidationCore.Application;
+﻿using DiscoverValidation.Application;
+using DiscoverValidationTest.Model.Animals;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ValidationAttributeTest.Model.Animals;
 
 namespace TestingDiscoverValidationNuget
 {

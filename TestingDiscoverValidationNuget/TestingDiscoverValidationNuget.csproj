@@ -35,8 +35,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DiscoverValidationCore, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\DiscoverValidationCore.1.0.0\lib\net46\DiscoverValidationCore.dll</HintPath>
+    <Reference Include="DiscoverValidation, Version=1.0.0.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DiscoverValidation.1.0.2\lib\net45\DiscoverValidation.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="FluentValidation, Version=6.2.1.0, Culture=neutral, processorArchitecture=MSIL">
@@ -62,17 +62,17 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ValidationAttributeCoreTest\ValidationAttributeCoreTest.csproj">
-      <Project>{9AE5F40F-5EEE-4D10-8589-FDC26078E679}</Project>
-      <Name>ValidationAttributeCoreTest</Name>
+    <ProjectReference Include="..\DiscoverValidationTest\DiscoverValidationTest.csproj">
+      <Project>{899DF638-7D37-46DB-8F9C-B3A11E8041DB}</Project>
+      <Name>DiscoverValidationTest</Name>
     </ProjectReference>
     <ProjectReference Include="..\ValidationAttributeTest\ValidationAttributeTest.csproj">
       <Project>{D40B0458-0377-468C-8E21-3D3F977C5682}</Project>
       <Name>ValidationAttributeTest</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

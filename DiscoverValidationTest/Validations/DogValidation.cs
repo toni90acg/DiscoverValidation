@@ -15,6 +15,4 @@ namespace DiscoverValidationTest.Validations
             RuleFor(dog => dog.CanFly).NotEqual(true).WithMessage("Dogs can't fly");
         }
     }
-
-   
 }
