@@ -1,4 +1,4 @@
-# ValidationAttribute
+# DiscoverValidation
 An easy example about using attributes to validate entities.
 It uses reflection and FluentValidation.
 If you like FluentValidation you'd love this!
@@ -27,6 +27,7 @@ For one unique entity:
             var validationResults = DiscoverValidator.ValidateEntity(cat);            
             var valid = validationResults.IsValid();
             var validationFailures = target.GetValidationFailures();
+
 
 For a list of one unique entity:
 
@@ -71,3 +72,8 @@ For a list of any entity:
     And in this case we have several properties to interact with it.
 
 And that's it.
+
+# About the project:
+The projects started as AttributeValidation, an easy way to validate entities with attributes. It was useful but with that you had to modify the model of your solution (but idea!). Then I started developing DiscoverValidation, it doesn't need to modify any model, it only needs you to create your validators and it will found them and use them when will be necessary.
+
+If you are curious you can see the first project (AttributeValidation) but this repository is dedicated to DiscoverValidation
