@@ -1,30 +1,36 @@
 using System;
 using System.Collections.Generic;
 using DiscoverValidation.Helpers;
-using DiscoverValidation.Model.Interface;
+using DiscoverValidation.Model.Data;
+using DiscoverValidation.Model.Data.Interface;
 
 namespace DiscoverValidation.Model.ValidationResults
 {
     public class DiscoverValidationResults
     {
-        public IList<object> NotValidatableDataList { get; set; }
+        public IList<object> AllDataList { get; set; }
         public IList<object> ValidDataList { get; set; }
         public IList<object> InvalidDataList { get; set; }
-        public IList<object> AllDataList { get; set; }
+        public IList<object> NotValidatableDataList { get; set; }
+        public IList<object> NotValidatedDataList { get; set; }
 
         public DiscoverValidationResults()
         {
             AllDataList = new List<object>();
-            NotValidatableDataList = new List<object>();
             ValidDataList = new List<object>();
             InvalidDataList = new List<object>();
+            NotValidatableDataList = new List<object>();
+            NotValidatedDataList = new List<object>();
+            ValidatableEntityTypes = new List<Type>();
             NotValidatableEntityTypes = new List<Type>();
+            NotValidatedEntityTypes = new List<Type>();
             EntityTypesWithInvalidValidations = new List<Type>();
         }
 
         public IList<Type> ValidatableEntityTypes { get; set; }
         public IList<Type> EntityTypesWithInvalidValidations { get; set; }
         public IList<Type> NotValidatableEntityTypes { get; set; }
+        public IList<Type> NotValidatedEntityTypes { get; set; }
 
         /// <summary>
         /// Get all the results data of a type
@@ -74,6 +80,11 @@ namespace DiscoverValidation.Model.ValidationResults
         public IList<IData<T>> GetNotValidatableDataOfType<T>()
         {
             return GetDataOfType<T>(typeof(NotValidatableData<>), NotValidatableDataList);
+        }
+
+        public IList<IData<T>> GetNotValidatedDataOfType<T>()
+        {
+            return GetDataOfType<T>(typeof(NotValidatedData<>), NotValidatedDataList);
         }
 
         private static IList<IData<T>> GetDataOfType<T>(Type dataType, IEnumerable<object> dataList)

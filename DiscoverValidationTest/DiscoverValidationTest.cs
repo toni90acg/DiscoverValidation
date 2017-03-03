@@ -2,6 +2,7 @@
 using System.Linq;
 using DiscoverValidation.Application;
 using DiscoverValidation.Model;
+using DiscoverValidation.Model.Data;
 using DiscoverValidationTest.Model.Animals;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

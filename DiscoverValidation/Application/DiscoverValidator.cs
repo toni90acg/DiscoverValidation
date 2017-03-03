@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using DiscoverValidation.GenericValidator;
 using DiscoverValidation.Helpers;
-using DiscoverValidation.Model;
 using DiscoverValidation.Model.Context;
-using DiscoverValidation.Model.Interface;
+using DiscoverValidation.Model.Data.Interface;
 using DiscoverValidation.Model.ValidationResults;
 
 namespace DiscoverValidation.Application
@@ -18,35 +16,18 @@ namespace DiscoverValidation.Application
         {
             DVcontext = CreateInstanceFactory.CreateDiscoverValidationContext();
         }
-        
+
         /// <summary>
         /// Validate one unique entity
         /// </summary>
         /// <typeparam name="T">Type of the entity to validate</typeparam>
         /// <param name="element">Entity to validate</param>
+        /// <param name="useThisValidatorType">Optional parameter to use an specific validator. It has to implement IDiscoverValidator</param>
         /// <returns>Returns an IData of type T</returns>
-        public static IData<T> ValidateEntity<T>(T element)
+        public static IData<T> ValidateEntity<T>(T element, Type useThisValidatorType = null)
         {
             var validatorStrategyHandler = CreateInstanceFactory.CreateValidatorStrategyHandler<T>();
-            return validatorStrategyHandler.ValidateOneTypeEntity<T>(element, DVcontext);
-            //if (!DVcontext.AllValidatorsDictionary.ContainsKey(element.GetType()))
-            //    return CreateInstanceFactory.CreateDataCasted(typeof(NotValidatableData<>), element);
-
-            //var validatorType = DVcontext.AllValidatorsDictionary[element.GetType()];
-
-            //var validator = (IDiscoverValidator) Activator.CreateInstance(validatorType);
-            //var results = validator.ValidateEntity(element);
-
-            //if (results.IsValid)
-            //{
-            //    return CreateInstanceFactory.CreateDataCasted(typeof(ValidData<>), element);
-            //}
-            //else
-            //{
-            //    var data = (InvalidData<T>)CreateInstanceFactory.CreateDataCasted(typeof(InvalidData<>), element);
-            //    data.ValidationFailures = results.Errors;
-            //    return data;
-            //}
+            return validatorStrategyHandler.ValidateOneTypeEntity(element, DVcontext, useThisValidatorType);
         }
 
         /// <summary>
@@ -54,10 +35,11 @@ namespace DiscoverValidation.Application
         /// </summary>
         /// <typeparam name="T">Type of the entities to validate</typeparam>
         /// <param name="elements">Entities to validate</param>
+        /// <param name="useThisValidatorType">Optional parameter to use an specific validator. It has to implement IDiscoverValidator</param>
         /// <returns>Returns a list of IData of type T</returns>
-        public static List<IData<T>> ValidateEntity<T>(List<T> elements)
+        public static List<IData<T>> ValidateEntity<T>(List<T> elements, Type useThisValidatorType = null)
         {
-            return elements.Select(ValidateEntity).ToList();
+            return elements.Select(element => ValidateEntity(element, useThisValidatorType)).ToList();
         }
 
         /// <summary>

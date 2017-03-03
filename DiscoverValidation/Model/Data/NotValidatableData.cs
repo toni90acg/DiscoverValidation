@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using DiscoverValidation.Model.Interface;
+using DiscoverValidation.Model.Data.Interface;
 using FluentValidation.Results;
 
-namespace DiscoverValidation.Model
+namespace DiscoverValidation.Model.Data
 {
     public class NotValidatableData<T> : IData<T>
     {
@@ -20,7 +20,10 @@ namespace DiscoverValidation.Model
 
         public IList<ValidationFailure> GetValidationFailures()
         {
-            return null;
+            return new List<ValidationFailure>()
+            {
+                new ValidationFailure(nameof(Entity),"No validators have been found")
+            };
         }
     }
 }

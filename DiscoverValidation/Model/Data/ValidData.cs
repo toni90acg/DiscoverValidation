@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using DiscoverValidation.Model.Interface;
+using DiscoverValidation.Model.Data.Interface;
 using FluentValidation.Results;
 
-namespace DiscoverValidation.Model
+namespace DiscoverValidation.Model.Data
 {
     public class ValidData<T> : IData<T>
     {

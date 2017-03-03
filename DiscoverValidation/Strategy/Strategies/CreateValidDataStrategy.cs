@@ -1,6 +1,7 @@
 ﻿using DiscoverValidation.Helpers;
 using DiscoverValidation.Model;
 using DiscoverValidation.Model.Context;
+using DiscoverValidation.Model.Data;
 using DiscoverValidation.Strategy.Interface;
 using FluentValidation.Results;
 

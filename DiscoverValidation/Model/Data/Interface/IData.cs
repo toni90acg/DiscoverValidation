@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using FluentValidation.Results;
 
-namespace DiscoverValidation.Model.Interface
+namespace DiscoverValidation.Model.Data.Interface
 {
     public interface IData<T>
     {
