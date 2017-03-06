@@ -20,6 +20,7 @@ namespace DiscoverValidation.Extensions
         internal static DiscoverValidatorContext InitializeEmptyValidatorsInstancesDictionary(this DiscoverValidatorContext context)
         {
             context.ValidatorsInstancesDictionary = new Dictionary<Type, IDiscoverValidator>();
+            context.ValidatorsAlternativeInstances = new List<Pair<Type, IDiscoverValidator>>();
             return context;
         }
 

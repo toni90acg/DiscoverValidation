@@ -82,8 +82,8 @@ namespace DiscoverValidation.Helpers
         internal static DiscoverValidatorContext CreateDiscoverValidationContext()
         {
             return new DiscoverValidatorContext()
-                .LoadValidatorsDictionary()
-                .InitializeEmptyValidatorsInstancesDictionary();
+                .InitializeEmptyValidatorsInstancesDictionary()
+                .LoadValidatorsDictionary();
         }
 
         internal static DiscoverValidatorContext CreateDiscoverValidationResults(DiscoverValidatorContext context)

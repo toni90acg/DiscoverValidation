@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using DiscoverValidation.Application;
-using DiscoverValidation.Model;
 using DiscoverValidation.Model.Data;
 using DiscoverValidationTest.Model.Animals;
+using DiscoverValidationTest.Validations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace DiscoverValidationTest
@@ -40,10 +40,52 @@ namespace DiscoverValidationTest
 
             //Act
             var target = DiscoverValidator.ValidateEntity(dog);
-            
+            var isValid = target.IsValid();
+            var validationFailures = target.GetValidationFailures();
+
             //Assert
             Assert.IsNotNull(target);
             Assert.IsInstanceOfType(target, typeof(ValidData<Dog>));
+            Assert.IsTrue(isValid.Value);
+            Assert.IsNull(validationFailures);
+        }
+
+        [TestMethod]
+        [TestCategory("Discover Validation - One Element")]
+        public void ValidationOneNotValidatedBirdElement()
+        {
+            //Arrange
+            var bird = new Bird("Tweety", 1, false, "Mammal");
+
+            //Act
+            var target = DiscoverValidator.ValidateEntity(bird);
+            var isValid = target.IsValid();
+            var validationFailures = target.GetValidationFailures();
+
+            //Assert
+            Assert.IsNotNull(target);
+            Assert.IsInstanceOfType(target, typeof(NotValidatedData<Bird>));
+            Assert.IsNull(isValid);
+            Assert.IsTrue(validationFailures.Any());
+        }
+
+        [TestMethod]
+        [TestCategory("Discover Validation - One Element")]
+        public void ValidationOneNotValidatableBigFoodElement()
+        {
+            //Arrange
+            var bird = new BigFoot();
+
+            //Act
+            var target = DiscoverValidator.ValidateEntity(bird);
+            var isValid = target.IsValid();
+            var validationFailures = target.GetValidationFailures();
+
+            //Assert
+            Assert.IsNotNull(target);
+            Assert.IsInstanceOfType(target, typeof(NotValidatableData<BigFoot>));
+            Assert.IsNull(isValid);
+            Assert.IsTrue(validationFailures.Any());
         }
 
         [TestMethod]
@@ -55,14 +97,36 @@ namespace DiscoverValidationTest
 
             //Act
             var target = DiscoverValidator.ValidateEntity(cat);
-            var valid = target.IsValid();
+            var isValid = target.IsValid();
             var validationFailures = target.GetValidationFailures();
 
             //Assert
             Assert.IsNotNull(target);
             Assert.IsInstanceOfType(target, typeof(InvalidData<Cat>));
-            Assert.IsNotNull((target as InvalidData<Cat>)?.ValidationFailures);
+            Assert.IsFalse(isValid.Value);
+            Assert.IsTrue(validationFailures.Any());
         }
+
+        [TestMethod]
+        [TestCategory("Discover Validation - One Element")]
+        public void ValidationOneValidBirdWithValidatorElement()
+        {
+            //Arrange
+            var bird = new Bird("Tweety", 1, true, "Bird");
+
+            //Act
+            var target = DiscoverValidator.ValidateEntity(bird, typeof(BirdValidation2));
+            var isValid = target.IsValid();
+            var validationFailures = target.GetValidationFailures();
+
+            //Assert
+            Assert.IsNotNull(target);
+            Assert.IsInstanceOfType(target, typeof(ValidData<Bird>));
+            Assert.IsTrue(isValid.Value);
+            Assert.IsNull(validationFailures);
+        }
+
+       
 
         [TestMethod]
         [TestCategory("Discover Validation - Multiple Elements")]

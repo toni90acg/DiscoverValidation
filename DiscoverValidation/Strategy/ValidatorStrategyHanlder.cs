@@ -116,7 +116,7 @@ namespace DiscoverValidation.Strategy
             if (validationResult == null)
             {
                 var entitiesWithMultiplesValidators =
-                    context.EntitiesWithMultiplesValidators.Single(ewmv => ewmv.EntityType == entity.GetType());
+                    context.EntitiesWithMultiplesValidators.SingleOrDefault(ewmv => ewmv.EntityType == entity.GetType());
                 if (entitiesWithMultiplesValidators != null)
                 {
                     return CreateInstanceFactory.CreateDataCasted(typeof(NotValidatedData<>), entity, validators: entitiesWithMultiplesValidators.Validators);

@@ -24,7 +24,7 @@ namespace DiscoverValidation.Model.Data
 
         public bool? IsValid()
         {
-            return false;
+            return null;
         }
 
         public IList<ValidationFailure> GetValidationFailures()
@@ -34,7 +34,7 @@ namespace DiscoverValidation.Model.Data
                 new ValidationFailure(nameof(Entity),"More than one validator have been found")
             };
 
-            ValidatorsFound.ForEach(v=> validationFailures.Add(new ValidationFailure(nameof(Entity),$"Validator: {nameof(v)}")));
+            ValidatorsFound.ForEach(v=> validationFailures.Add(new ValidationFailure(nameof(Entity),$"Validator: {v.Name}")));
 
             return validationFailures;
         }
