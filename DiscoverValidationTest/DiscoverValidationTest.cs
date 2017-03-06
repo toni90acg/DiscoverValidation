@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using DiscoverValidation.Application;
+using DiscoverValidation.Extensions;
 using DiscoverValidation.Model.Data;
 using DiscoverValidationTest.Model.Animals;
 using DiscoverValidationTest.Validations;
@@ -46,7 +47,7 @@ namespace DiscoverValidationTest
             //Assert
             Assert.IsNotNull(target);
             Assert.IsInstanceOfType(target, typeof(ValidData<Dog>));
-            Assert.IsTrue(isValid.Value);
+            Assert.IsTrue(isValid != null && isValid.Value);
             Assert.IsNull(validationFailures);
         }
 
@@ -103,7 +104,7 @@ namespace DiscoverValidationTest
             //Assert
             Assert.IsNotNull(target);
             Assert.IsInstanceOfType(target, typeof(InvalidData<Cat>));
-            Assert.IsFalse(isValid.Value);
+            Assert.IsFalse(isValid != null && isValid.Value);
             Assert.IsTrue(validationFailures.Any());
         }
 
@@ -115,21 +116,21 @@ namespace DiscoverValidationTest
             var bird = new Bird("Tweety", 1, true, "Bird");
 
             //Act
-            var target = DiscoverValidator.ValidateEntity(bird, typeof(BirdValidation2));
+            var target = DiscoverValidator.ValidateEntity(bird, useThisValidatorType: typeof(BirdValidation2));
             var isValid = target.IsValid();
             var validationFailures = target.GetValidationFailures();
 
             //Assert
             Assert.IsNotNull(target);
             Assert.IsInstanceOfType(target, typeof(ValidData<Bird>));
-            Assert.IsTrue(isValid.Value);
+            Assert.IsTrue(isValid != null && isValid.Value);
             Assert.IsNull(validationFailures);
         }
 
        
 
         [TestMethod]
-        [TestCategory("Discover Validation - Multiple Elements")]
+        [TestCategory("Discover Validation - Multiple Elements of one unique type")]
         public void ValidationMultipleElementsOfOneUniqueType()
         {
             //Act
@@ -141,16 +142,28 @@ namespace DiscoverValidationTest
             });
 
             var allValidData = resultsOneEntity.OfType<ValidData<Dog>>();
-            var allInvalidData = resultsOneEntity.OfType<InvalidData<Dog>>();
+            var allInvalidData = resultsOneEntity.OfType<InvalidData<Dog>>(); 
 
-
-            var allNotValidatableData = resultsOneEntity.OfType<NotValidatableData<Dog>>();
-
-            allNotValidatableData.ToList().ForEach(data =>
+            allValidData.ForEach(data =>
             {
                 var entity = data.Entity;
-                //Do whatever you want
+                var isValid = data.IsValid();
+                var failures = data.GetValidationFailures();
+                Assert.IsInstanceOfType(entity, typeof(Dog));
+                Assert.IsTrue(isValid != null && isValid.Value);
+                Assert.IsNull(failures);
             });
+
+            allInvalidData.ForEach(data =>
+            {
+                var entity = data.Entity;
+                var isValid = data.IsValid();
+                var failures = data.GetValidationFailures();
+                Assert.IsInstanceOfType(entity, typeof(Dog));
+                Assert.IsFalse(isValid != null && isValid.Value);
+                Assert.IsTrue(failures.Any());
+            });
+
             //Assert
             Assert.IsNotNull(resultsOneEntity);
             Assert.AreEqual(1, resultsOneEntity.OfType<ValidData<Dog>>().Count());
@@ -166,26 +179,62 @@ namespace DiscoverValidationTest
 
            
             var allresultsOfDogs = results.GetDataOfType<Dog>();
-            allresultsOfDogs.ToList().ForEach(data =>
+            allresultsOfDogs.ForEach(data =>
             {
                 var entity = data.Entity;
-                //Do whatever you want
+                var isValid = data.IsValid();
+                var failures = data.GetValidationFailures();
+                Assert.IsInstanceOfType(entity, typeof(Dog));
+                Assert.IsNotNull(isValid);
             });
+
             var allInvalidDataOfCats = results.GetInvalidDataOfType<Cat>();
+            allInvalidDataOfCats.ForEach(data =>
+            {
+                var entity = data.Entity;
+                var isValid = data.IsValid();
+                var failures = data.GetValidationFailures();
+                Assert.IsInstanceOfType(entity, typeof(Cat));
+                Assert.IsFalse(isValid != null && isValid.Value);
+                Assert.IsNotNull(failures);
+            });
+
             var allNotValidatableDataOfBigFoot = results.GetNotValidatableDataOfType<BigFoot>();
-            
-            //Assert
-            Assert.IsNotNull(results);
-            Assert.AreEqual(3, results.GetDataOfType<Dog>().Count);
-            Assert.AreEqual(1, results.GetValidDataOfType<Dog>().Count);
-            Assert.AreEqual(2, results.GetInvalidDataOfType<Dog>().Count);
-            var a = results.GetInvalidDataOfType<Dog>();
-            var b = a.First();
-            var c = (InvalidData<Dog>) b;
-            var d = c.ValidationFailures;
-            Assert.IsNotNull(
-                ((InvalidData<Dog>) results
-                    .GetInvalidDataOfType<Dog>().First()).ValidationFailures);
+            allNotValidatableDataOfBigFoot.ForEach(data =>
+            {
+                var entity = data.Entity;
+                var isValid = data.IsValid();
+                var failures = data.GetValidationFailures();
+                Assert.IsInstanceOfType(entity, typeof(BigFoot));
+                Assert.IsNull(isValid);
+                Assert.IsNotNull(failures);
+            });
+
+            var allNotValidatedDataOfBird = results.GetNotValidatedDataOfType<Bird>();
+            allNotValidatedDataOfBird.ForEach(data =>
+            {
+                var entity = data.Entity;
+                var isValid = data.IsValid();
+                var failures = data.GetValidationFailures();
+                Assert.IsInstanceOfType(entity, typeof(Bird));
+                Assert.IsNull(isValid);
+                Assert.IsNotNull(failures);
+            });
+
+            var entityTypesWithInvalidValidations = results.EntityTypesWithInvalidValidations;
+            Assert.AreEqual(3, entityTypesWithInvalidValidations.Count);
+            var notValidatableEntityTypes = results.NotValidatableEntityTypes;
+            notValidatableEntityTypes.ForEach(type =>
+            {
+                Assert.AreEqual(typeof(BigFoot), type);
+            });
+            var notValidatedEntityTypes = results.NotValidatedEntityTypes;
+            notValidatedEntityTypes.ForEach(type =>
+            {
+                Assert.AreEqual(typeof(Bird), type);
+            });
+            var validatableEntityTypes = results.ValidatableEntityTypes;
+            Assert.AreEqual(2, validatableEntityTypes.Count);
         }
     }
 }

@@ -14,6 +14,7 @@ namespace DiscoverValidation.Model.Data
         public NotValidatedData(T entity)
         {
             Entity = entity;
+            ValidatorsFound = new List<Type>();
         }
 
         public NotValidatedData(T entity, List<Type> validatorsFound)

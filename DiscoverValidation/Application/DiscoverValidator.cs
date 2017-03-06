@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DiscoverValidation.Extensions;
 using DiscoverValidation.Helpers;
 using DiscoverValidation.Model.Context;
 using DiscoverValidation.Model.Data.Interface;
@@ -53,7 +54,7 @@ namespace DiscoverValidation.Application
             DVcontext = CreateInstanceFactory.CreateDiscoverValidationResults(DVcontext);
             var validatorStrategyHandler = CreateInstanceFactory.CreateValidatorStrategyHandler<T>();
 
-            entities.ToList().ForEach(element =>
+            entities.ForEach(element =>
             {
                 validatorStrategyHandler.UpdateValidationResuls(DVcontext, element);
             });
