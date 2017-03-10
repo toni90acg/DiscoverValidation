@@ -15,5 +15,17 @@ namespace DiscoverValidation.Strategy.Strategies
             context.DiscoverValidationResults.ValidDataList.Add(data);
             context.DiscoverValidationResults.AllDataList.Add(data);
         }
+
+        public void UpdateValidationResulsLock<T>(DiscoverValidatorContext context, T element, object lockObject,
+            ValidationResult validationResult = null)
+        {
+            var data = CreateInstanceFactory.CreateData(typeof(ValidData<>), element);
+
+            lock (lockObject)
+            {
+                context.DiscoverValidationResults.ValidDataList.Add(data);
+                context.DiscoverValidationResults.AllDataList.Add(data);
+            }
+        }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using DiscoverValidation.GenericValidator;
 using DiscoverValidation.Helpers;
 using DiscoverValidation.Model.Context;
@@ -9,10 +11,10 @@ namespace DiscoverValidation.Extensions
 {
     internal static class DiscoverValidatorContextExtension
     {
-        internal static DiscoverValidatorContext LoadValidatorsDictionary(this DiscoverValidatorContext context)
+        internal static DiscoverValidatorContext LoadValidatorsDictionary(this DiscoverValidatorContext context, Assembly assembly)
         {
             List<EntityWithMultipleValidators> entitiesWithMultipleValidators;
-            context.ValidatorsTypesDictionary = AssembliesHelper.LoadValidators(out entitiesWithMultipleValidators);
+            context.ValidatorsTypesDictionary = AssembliesHelper.LoadValidators(assembly, out entitiesWithMultipleValidators);
             context.EntitiesWithMultiplesValidators = entitiesWithMultipleValidators;
             return context;
         }

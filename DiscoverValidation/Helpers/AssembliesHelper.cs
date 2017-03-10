@@ -11,13 +11,24 @@ namespace DiscoverValidation.Helpers
 {
     public static class AssembliesHelper
     {
-        internal static Dictionary<Type, Type> LoadValidators(out List<EntityWithMultipleValidators> entitiesWithMultipleValidatorsConflicts)
+        internal static Dictionary<Type, Type> LoadValidators(Assembly assembly, out List<EntityWithMultipleValidators> entitiesWithMultipleValidatorsConflicts)
         {
             var validatorsDictionary = new Dictionary<Type, Type>();
             var entitiesWithMultipleValidators = new List<EntityWithMultipleValidators>();
 
-            AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
+            IEnumerable<Type> types;
+
+            if (assembly == null)
+            {
+                types = AppDomain.CurrentDomain.GetAssemblies()
+                    .SelectMany(s => s.GetTypes());
+            }
+            else
+            {
+                types = assembly.GetTypes().ToList();
+            }
+
+            types
                 .Where(t => IsAssignableToGenericType(t, typeof(AbstractDiscoverValidator<>)))
                 .Where(t => !t.IsAbstract && !t.IsInterface)
                 .Select(s => new

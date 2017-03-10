@@ -16,6 +16,7 @@ namespace DiscoverValidation.Strategy
 {
     public class ValidatorStrategyHanlder<T>
     {
+        private object _thisLock = new object();
         private readonly Dictionary<Func<DiscoverValidatorContext, T , ValidationResult, bool>, IValidatableStrategy> _strategiesCreateDataDictionary;
 
         public ValidatorStrategyHanlder()
@@ -62,7 +63,19 @@ namespace DiscoverValidation.Strategy
             validatableStrategy.UpdateValidationResuls(context, element, validationResult);
         }
 
-        private static IDiscoverValidator GetValidator<TElement>(DiscoverValidatorContext context, TElement element)
+        public void UpdateValidationResulsImproved(DiscoverValidatorContext context, T element, ValidationResult validationResult)
+        {
+            var validatableStrategy = _strategiesCreateDataDictionary.Single(p => p.Key.Invoke(context, element, validationResult)).Value;
+            validatableStrategy.UpdateValidationResuls(context, element, validationResult);
+        }
+
+        public void UpdateValidationResulsImprovedLock(DiscoverValidatorContext context, T element, ValidationResult validationResult)
+        {
+            var validatableStrategy = _strategiesCreateDataDictionary.Single(p => p.Key.Invoke(context, element, validationResult)).Value;
+            validatableStrategy.UpdateValidationResulsLock(context, element, _thisLock, validationResult);
+        }
+
+        internal IDiscoverValidator GetValidator<TElement>(DiscoverValidatorContext context, TElement element)
         {
             if (context.ValidatorsInstancesDictionary.ContainsKey(element.GetType()))
             {
@@ -77,10 +90,32 @@ namespace DiscoverValidation.Strategy
                 return validator;
             }
 
+
             return null;
         }
 
-        private static IDiscoverValidator GetValidator(DiscoverValidatorContext context, Type useThisValidatorType)
+        internal IDiscoverValidator GetValidatorLock<TElement>(DiscoverValidatorContext context, TElement element)
+        {
+            lock (_thisLock)
+            {
+                if (context.ValidatorsInstancesDictionary.ContainsKey(element.GetType()))
+                {
+                    return context.ValidatorsInstancesDictionary[element.GetType()];
+                }
+
+                if (context.ValidatorsTypesDictionary.ContainsKey(element.GetType()))
+                {
+                    var validatorType = context.ValidatorsTypesDictionary[element.GetType()];
+                    var validator = CreateInstanceFactory.CreateValidator(validatorType);
+                    context.RegisterValidatorInstance(element.GetType(), validator);
+                    return validator;
+                }
+            }
+
+            return null;
+        }
+
+        internal IDiscoverValidator GetValidator(DiscoverValidatorContext context, Type useThisValidatorType)
         {
             var validator = context
                 .ValidatorsAlternativeInstances
@@ -99,7 +134,8 @@ namespace DiscoverValidation.Strategy
             return validator;
         }
 
-        public IData<TEntity> ValidateOneTypeEntity<TEntity>(TEntity entity, DiscoverValidatorContext context, Type useThisValidatorType)
+        [Obsolete("obsolete")]
+        public IData<TEntity> ValidateOneTypeEntityOld<TEntity>(TEntity entity, DiscoverValidatorContext context, Type useThisValidatorType)
         {
             ValidationResult validationResult = null;
 
@@ -133,5 +169,66 @@ namespace DiscoverValidation.Strategy
             data.ValidationFailures = validationResult.Errors;
             return (IData<TEntity>) data;
         }
+
+        public IData<TEntity> ValidateOneTypeEntity<TEntity>(TEntity entity, DiscoverValidatorContext context, IDiscoverValidator validator)
+        {
+            var validationResult = validator.ValidateEntity(entity);
+
+            if (validationResult == null)
+            {
+                var entitiesWithMultiplesValidators =
+                    context.EntitiesWithMultiplesValidators.SingleOrDefault(ewmv => ewmv.EntityType == entity.GetType());
+                if (entitiesWithMultiplesValidators != null)
+                {
+                    return CreateInstanceFactory.CreateDataCasted(typeof(NotValidatedData<>), entity, validators: entitiesWithMultiplesValidators.Validators);
+                }
+                return CreateInstanceFactory.CreateDataCasted(typeof(NotValidatableData<>), entity);
+            }
+
+            if (validationResult.IsValid)
+            {
+                return CreateInstanceFactory.CreateDataCasted(typeof(ValidData<>), entity);
+            }
+
+            var data = (InvalidData<T>)CreateInstanceFactory.CreateDataCasted(typeof(InvalidData<>), entity);
+            data.ValidationFailures = validationResult.Errors;
+            return (IData<TEntity>)data;
+        }
+
+        public IData<TEntity> ValidateOneTypeEntityAsync<TEntity>(TEntity entity, DiscoverValidatorContext context, Type useThisValidatorType)
+        {
+            ValidationResult validationResult = null;
+
+            if (useThisValidatorType != null)
+            {
+                validationResult = GetValidator(context, useThisValidatorType).ValidateEntity(entity);
+            }
+
+            else if (context.ValidatorsTypesDictionary.ContainsKey(entity.GetType()))
+            {
+                validationResult = GetValidator(context, entity).ValidateEntity(entity);
+            }
+
+            if (validationResult == null)
+            {
+                var entitiesWithMultiplesValidators =
+                    context.EntitiesWithMultiplesValidators.SingleOrDefault(ewmv => ewmv.EntityType == entity.GetType());
+                if (entitiesWithMultiplesValidators != null)
+                {
+                    return CreateInstanceFactory.CreateDataCasted(typeof(NotValidatedData<>), entity, validators: entitiesWithMultiplesValidators.Validators);
+                }
+                return CreateInstanceFactory.CreateDataCasted(typeof(NotValidatableData<>), entity);
+            }
+
+            if (validationResult.IsValid)
+            {
+                return CreateInstanceFactory.CreateDataCasted(typeof(ValidData<>), entity);
+            }
+
+            var data = (InvalidData<T>)CreateInstanceFactory.CreateDataCasted(typeof(InvalidData<>), entity);
+            data.ValidationFailures = validationResult.Errors;
+            return (IData<TEntity>)data;
+        }
+
     }
 }

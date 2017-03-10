@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DiscoverValidation.Application;
 using DiscoverValidation.Extensions;
@@ -133,13 +134,24 @@ namespace DiscoverValidationTest
         [TestCategory("Discover Validation - Multiple Elements of one unique type")]
         public void ValidationMultipleElementsOfOneUniqueType()
         {
-            //Act
-            var resultsOneEntity = DiscoverValidator.ValidateEntity(new List<Dog>()
+            var entities = new List<Dog>()
             {
                 new Dog("Max", 6, false, "Mammal"),
                 new Dog("", 4, false, "Mammal"),
                 new Dog("Bobby", 8, true, "Mammal"),
-            });
+            };
+            //Act
+            var time1 = DateTime.Now;
+            var resultsOneEntity = DiscoverValidator.ValidateEntity(entities);
+            var time2 = DateTime.Now;
+
+            var rest1 = time2 - time1;
+
+            var time3 = DateTime.Now;
+            var resultsOneEntityAssync = DiscoverValidator.ValidateEntityAsync(entities);
+            var time4 = DateTime.Now;
+
+            var rest2 = time4 - time3;
 
             var allValidData = resultsOneEntity.OfType<ValidData<Dog>>();
             var allInvalidData = resultsOneEntity.OfType<InvalidData<Dog>>(); 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using DiscoverValidation.Exceptions;
 using DiscoverValidation.Extensions;
 using DiscoverValidation.GenericValidator;
@@ -79,11 +80,11 @@ namespace DiscoverValidation.Helpers
             }
         }
 
-        internal static DiscoverValidatorContext CreateDiscoverValidationContext()
+        internal static DiscoverValidatorContext CreateDiscoverValidationContext(Assembly assembly)
         {
             return new DiscoverValidatorContext()
                 .InitializeEmptyValidatorsInstancesDictionary()
-                .LoadValidatorsDictionary();
+                .LoadValidatorsDictionary(assembly);
         }
 
         internal static DiscoverValidatorContext CreateDiscoverValidationResults(DiscoverValidatorContext context)

@@ -17,5 +17,18 @@ namespace DiscoverValidation.Strategy.Strategies
             context.DiscoverValidationResults.InvalidDataList.Add(data);
             context.DiscoverValidationResults.AllDataList.Add(data);
         }
+
+        public void UpdateValidationResulsLock<T>(DiscoverValidatorContext context, T element, object lockObject,
+            ValidationResult validationResult)
+        {
+            var data = CreateInstanceFactory.CreateData(typeof(InvalidData<>), element, validationResult.Errors);
+            
+            lock (lockObject)
+            {
+                context.DiscoverValidationResults.EntityTypesWithInvalidValidations.Add(element.GetType());
+                context.DiscoverValidationResults.InvalidDataList.Add(data);
+                context.DiscoverValidationResults.AllDataList.Add(data);
+            }
+        }
     }
 }
