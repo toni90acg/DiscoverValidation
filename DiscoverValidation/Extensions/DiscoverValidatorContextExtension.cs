@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using DiscoverValidation.GenericValidator;
 using DiscoverValidation.Helpers;
@@ -31,6 +32,29 @@ namespace DiscoverValidation.Extensions
             context.ValidatorsInstancesDictionary.Add(elementType, validator);
             return context;
         }
+
+        //internal static DiscoverValidatorContext LoadValidatorTypes<T>(this DiscoverValidatorContext context, IList<T> elements)
+        //{
+        //    elements.ForEach(element =>
+        //    {
+        //        var entitiesWithMultVal =
+        //            context.EntitiesWithMultiplesValidators
+        //                .Where(ewmv => ewmv.EntityType == element.GetType());
+
+        //        if (entitiesWithMultVal.Any())
+        //        {
+        //            context.DiscoverValidationResults.EntityTypesWithInvalidValidations.Add(element.GetType());
+        //            return;
+        //        }
+
+
+
+
+        //    });
+
+
+        //    return context;
+        //}
 
         internal static IDiscoverValidator GetValidator<TElement>(this DiscoverValidatorContext context, TElement element)
         {

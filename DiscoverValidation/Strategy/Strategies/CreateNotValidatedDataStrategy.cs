@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using DiscoverValidation.Helpers;
 using DiscoverValidation.Model.Context;
@@ -11,15 +12,19 @@ namespace DiscoverValidation.Strategy.Strategies
     {
         public void UpdateValidationResuls<T>(DiscoverValidatorContext context, T element, ValidationResult validationResult = null)
         {
-            var validatorsFound =
-                context.EntitiesWithMultiplesValidators
-                .Single(ewmv => ewmv.EntityType == element.GetType())
-                .Validators;
-            var data = CreateInstanceFactory.CreateData(typeof(NotValidatedData<>), element, validators: validatorsFound);
+            //var validatorsFound =
+            //    context.EntitiesWithMultiplesValidators
+            //    .Single(ewmv => ewmv.EntityType == element.GetType())
+            //    .Validators;
+            //var data = CreateInstanceFactory.CreateData(typeof(NotValidatedData<>), element, validators: validatorsFound);
 
-            context.DiscoverValidationResults.NotValidatedEntityTypes.Add(element.GetType());
-            context.DiscoverValidationResults.NotValidatedDataList.Add(data);
-            context.DiscoverValidationResults.AllDataList.Add(data);
+            var data = CreateData(context, element);
+
+            UpdateData(context, element, data);
+
+            //context.DiscoverValidationResults.NotValidatedEntityTypes.Add(element.GetType());
+            //context.DiscoverValidationResults.NotValidatedDataList.Add(data);
+            //context.DiscoverValidationResults.AllDataList.Add(data);
         }
 
         public void UpdateValidationResulsLock<T>(DiscoverValidatorContext context, T element, object lockObject,
@@ -31,12 +36,31 @@ namespace DiscoverValidation.Strategy.Strategies
                     .Validators;
             var data = CreateInstanceFactory.CreateData(typeof(NotValidatedData<>), element, validators: validatorsFound);
             
+
             lock (lockObject)
             {
-                context.DiscoverValidationResults.NotValidatedEntityTypes.Add(element.GetType());
-                context.DiscoverValidationResults.NotValidatedDataList.Add(data);
-                context.DiscoverValidationResults.AllDataList.Add(data);
+                UpdateData(context, element, data);
+                //context.DiscoverValidationResults.NotValidatedEntityTypes.Add(element.GetType());
+                //context.DiscoverValidationResults.NotValidatedDataList.Add(data);
+                //context.DiscoverValidationResults.AllDataList.Add(data);
             }
+        }
+
+        private object CreateData(DiscoverValidatorContext context, object element)
+        {
+            var validatorsFound =
+                context.EntitiesWithMultiplesValidators
+                    .Single(ewmv => ewmv.EntityType == element.GetType())
+                    .Validators;
+            return CreateInstanceFactory.CreateData(typeof(NotValidatedData<>), element, validators: validatorsFound);
+        }
+
+        private void UpdateData<T>(DiscoverValidatorContext context, T element, object data)
+        {
+            context.DiscoverValidationResults.NotValidatedDataList.Add(data);
+            context.DiscoverValidationResults.AllDataList.Add(data);
+            if (!context.DiscoverValidationResults.NotValidatedEntityTypes.Contains(element.GetType()))
+                context.DiscoverValidationResults.NotValidatedEntityTypes.Add(element.GetType());
         }
     }
 }

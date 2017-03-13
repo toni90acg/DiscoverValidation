@@ -187,7 +187,7 @@ namespace DiscoverValidationTest
         public void ValidationMultipleElements()
         {
             //Act
-            var results = DiscoverValidator.ValidateMultipleEntities(_animals); // Animals is a List<IAnimal>
+            var results = DiscoverValidator.ValidateMultipleEntitiesOld(_animals); // Animals is a List<IAnimal>
 
            
             var allresultsOfDogs = results.GetDataOfType<Dog>();
@@ -233,8 +233,6 @@ namespace DiscoverValidationTest
                 Assert.IsNotNull(failures);
             });
 
-            var entityTypesWithInvalidValidations = results.EntityTypesWithInvalidValidations;
-            Assert.AreEqual(3, entityTypesWithInvalidValidations.Count);
             var notValidatableEntityTypes = results.NotValidatableEntityTypes;
             notValidatableEntityTypes.ForEach(type =>
             {
@@ -247,6 +245,29 @@ namespace DiscoverValidationTest
             });
             var validatableEntityTypes = results.ValidatableEntityTypes;
             Assert.AreEqual(2, validatableEntityTypes.Count);
+        }
+
+        [TestMethod]
+        [TestCategory("Discover Validation - Multiple Elements")]
+        public void ValidationMultipleElementsFluent()
+        {
+            //Act
+            DiscoverValidator.Initialize(typeof(CatValidation).Assembly);
+           // var results = DiscoverValidator.ValidateMultipleEntities(_animals); // Animals is a List<IAnimal>
+
+            var time1 = DateTime.Now;
+            var resultsOneEntity = DiscoverValidator.ValidateMultipleEntities(_animals);
+            var time2 = DateTime.Now;
+
+            var rest1 = time2 - time1;
+
+            var time3 = DateTime.Now;
+            var resultsOneEntityAssync = DiscoverValidator.ValidateMultipleEntitiesAsync(_animals);
+            var time4 = DateTime.Now;
+
+            var rest2 = time4 - time3;
+
+            var time = rest2 - rest1;
         }
     }
 }

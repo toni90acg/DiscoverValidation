@@ -16,7 +16,7 @@ namespace DiscoverValidation.Strategy
 {
     public class ValidatorStrategyHanlder<T>
     {
-        private object _thisLock = new object();
+        private readonly object _thisLock = new object();
         private readonly Dictionary<Func<DiscoverValidatorContext, T , ValidationResult, bool>, IValidatableStrategy> _strategiesCreateDataDictionary;
 
         public ValidatorStrategyHanlder()
@@ -26,13 +26,13 @@ namespace DiscoverValidation.Strategy
             {
                 {
                     (context, element, vR) =>
-                        context.GetValidator(element) == null &&
+                        vR == null &&
                         context.EntitiesWithMultiplesValidators.Any(ewmv => ewmv.EntityType != element.GetType()),
                     new CreateNotValidatableDataStrategy()
                 },
                 {
                     (context, element, vR) =>
-                        context.GetValidator(element) == null &&
+                        vR == null &&
                         context.EntitiesWithMultiplesValidators.Any(ewmv => ewmv.EntityType == element.GetType()),
                     new CreateNotValidatedDataStrategy()
                 },
@@ -89,7 +89,6 @@ namespace DiscoverValidation.Strategy
                 context.RegisterValidatorInstance(element.GetType(), validator);
                 return validator;
             }
-
 
             return null;
         }

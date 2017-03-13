@@ -24,11 +24,9 @@ namespace DiscoverValidation.Model.ValidationResults
             ValidatableEntityTypes = new List<Type>();
             NotValidatableEntityTypes = new List<Type>();
             NotValidatedEntityTypes = new List<Type>();
-            EntityTypesWithInvalidValidations = new List<Type>();
         }
 
         public IList<Type> ValidatableEntityTypes { get; set; }
-        public IList<Type> EntityTypesWithInvalidValidations { get; set; }
         public IList<Type> NotValidatableEntityTypes { get; set; }
         public IList<Type> NotValidatedEntityTypes { get; set; }
 
