@@ -7,6 +7,8 @@ using DiscoverValidation.GenericValidator;
 using DiscoverValidation.Helpers;
 using DiscoverValidation.Model.Context;
 using DiscoverValidation.Model.ValidationResults;
+using DiscoverValidation.Strategy;
+using FluentValidation.Results;
 
 namespace DiscoverValidation.Extensions
 {
@@ -33,28 +35,6 @@ namespace DiscoverValidation.Extensions
             return context;
         }
 
-        //internal static DiscoverValidatorContext LoadValidatorTypes<T>(this DiscoverValidatorContext context, IList<T> elements)
-        //{
-        //    elements.ForEach(element =>
-        //    {
-        //        var entitiesWithMultVal =
-        //            context.EntitiesWithMultiplesValidators
-        //                .Where(ewmv => ewmv.EntityType == element.GetType());
-
-        //        if (entitiesWithMultVal.Any())
-        //        {
-        //            context.DiscoverValidationResults.EntityTypesWithInvalidValidations.Add(element.GetType());
-        //            return;
-        //        }
-
-
-
-
-        //    });
-
-
-        //    return context;
-        //}
 
         internal static IDiscoverValidator GetValidator<TElement>(this DiscoverValidatorContext context, TElement element)
         {
@@ -72,6 +52,38 @@ namespace DiscoverValidation.Extensions
             }
 
             return null;
+        }
+
+        internal static DiscoverValidatorContext CreateValidatorInstances<T>(this DiscoverValidatorContext context, IList<T> entities)
+        {
+            context.ValidatorsTypesDictionary
+                .Where(d => entities
+                    .Select(e => e.GetType())
+                    .Distinct().Contains(d.Key))
+                .ForEach(d =>
+                {
+                    if (!context.ValidatorsInstancesDictionary.ContainsKey(d.Key))
+                        context.RegisterValidatorInstance(d.Key, CreateInstanceFactory.CreateValidator(d.Value));
+                });
+            return context;
+        }
+
+        internal static DiscoverValidationResults ValidateEntities<T>(this DiscoverValidatorContext context, IList<T> entities, ValidatorStrategyHanlder<T> validatorStrategyHandler)
+        {
+            entities.ForEach(entity =>
+            {
+                ValidationResult validationResult = null;
+                if (context.ValidatorsInstancesDictionary.ContainsKey(entity.GetType()))
+                {
+                    validationResult =
+                        context.ValidatorsInstancesDictionary[entity.GetType()]
+                            .ValidateEntity(entity);
+                }
+                validatorStrategyHandler
+                    .UpdateValidationResulsImproved(context, entity, validationResult);
+            });
+
+            return context.DiscoverValidationResults;
         }
     }
 

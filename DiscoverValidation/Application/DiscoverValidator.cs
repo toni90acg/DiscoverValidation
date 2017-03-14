@@ -74,30 +74,33 @@ namespace DiscoverValidation.Application
             if(DVcontext?.DiscoverValidationResults == null) DVcontext = CreateInstanceFactory.InitializeDiscoverValidationResults(DVcontext);
             var validatorStrategyHandler = CreateInstanceFactory.CreateValidatorStrategyHandler<T>();
 
-            DVcontext.ValidatorsTypesDictionary
-                .Where(d => entities
-                    .Select(e => e.GetType())
-                    .Distinct().Contains(d.Key))
-                .ForEach(d =>
-                {
-                    if (!DVcontext.ValidatorsInstancesDictionary.ContainsKey(d.Key))
-                        DVcontext.RegisterValidatorInstance(d.Key, CreateInstanceFactory.CreateValidator(d.Value));
-                });
+            return DVcontext.CreateValidatorInstances(entities)
+                .ValidateEntities(entities, validatorStrategyHandler);
 
-            entities.ForEach(entity =>
-            {
-                ValidationResult validationResult = null;
-                if (DVcontext.ValidatorsInstancesDictionary.ContainsKey(entity.GetType()))
-                {
-                    validationResult =
-                        DVcontext.ValidatorsInstancesDictionary[entity.GetType()]
-                            .ValidateEntity(entity);
-                }
-                validatorStrategyHandler
-                    .UpdateValidationResulsImproved(DVcontext, entity, validationResult);
-            });
+            //DVcontext.ValidatorsTypesDictionary
+            //    .Where(d => entities
+            //        .Select(e => e.GetType())
+            //        .Distinct().Contains(d.Key))
+            //    .ForEach(d =>
+            //    {
+            //        if (!DVcontext.ValidatorsInstancesDictionary.ContainsKey(d.Key))
+            //            DVcontext.RegisterValidatorInstance(d.Key, CreateInstanceFactory.CreateValidator(d.Value));
+            //    });
+
+            //entities.ForEach(entity =>
+            //{
+            //    ValidationResult validationResult = null;
+            //    if (DVcontext.ValidatorsInstancesDictionary.ContainsKey(entity.GetType()))
+            //    {
+            //        validationResult =
+            //            DVcontext.ValidatorsInstancesDictionary[entity.GetType()]
+            //                .ValidateEntity(entity);
+            //    }
+            //    validatorStrategyHandler
+            //        .UpdateValidationResulsImproved(DVcontext, entity, validationResult);
+            //});
             
-            return DVcontext.DiscoverValidationResults;
+            //return DVcontext.DiscoverValidationResults;
         }
 
         public static DiscoverValidationResults ValidateMultipleEntitiesAsync<T>(IList<T> entities)
@@ -105,6 +108,7 @@ namespace DiscoverValidation.Application
             if (DVcontext == null) Initialize();
             DVcontext = CreateInstanceFactory.InitializeDiscoverValidationResults(DVcontext);
             var validatorStrategyHandler = CreateInstanceFactory.CreateValidatorStrategyHandler<T>();
+
             var tasks = new List<Task>();
             
             DVcontext.ValidatorsTypesDictionary
