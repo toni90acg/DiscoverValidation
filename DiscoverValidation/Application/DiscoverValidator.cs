@@ -15,12 +15,28 @@ namespace DiscoverValidation.Application
     public static class DiscoverValidator
     {
         internal static DiscoverValidatorContext DVcontext;
+        public static Task InitializedTask;
 
         public static void Initialize(Assembly assembly = null)
         {
             DVcontext = CreateInstanceFactory.CreateDiscoverValidationContext(assembly);
         }
-        
+
+        public static Task InitializeAssync(Assembly assembly = null)
+        {
+            InitializedTask = Task.Run(()=>DVcontext = CreateInstanceFactory.CreateDiscoverValidationContext(assembly));
+            return InitializedTask;
+        }
+
+        private static void IsReady()
+        {
+            InitializedTask?.Wait();
+            if (DVcontext != null)
+            {
+                Initialize();
+            }
+        }
+
         /// <summary>
         /// Validate one unique entity
         /// </summary>
@@ -30,7 +46,7 @@ namespace DiscoverValidation.Application
         /// <returns>Returns an IData of type T</returns>
         public static IData<T> ValidateEntity<T>(T element, Type useThisValidatorType = null)
         {
-            if(DVcontext == null) Initialize();
+            IsReady();
             var validatorStrategyHandler = CreateInstanceFactory.CreateValidatorStrategyHandler<T>();
             var validator = useThisValidatorType == null
                 ? validatorStrategyHandler.GetValidator(DVcontext, element)
@@ -38,6 +54,8 @@ namespace DiscoverValidation.Application
 
             return validatorStrategyHandler.ValidateOneTypeEntity(element, DVcontext, validator);
         }
+
+
 
         /// <summary>
         /// Validate a list of entities of one unique type
@@ -48,12 +66,13 @@ namespace DiscoverValidation.Application
         /// <returns>Returns a list of IData of type T</returns>
         public static List<IData<T>> ValidateEntity<T>(List<T> elements, Type useThisValidatorType = null)
         {
-            if (DVcontext == null) Initialize();
+            IsReady();
             return elements.Select(element => ValidateEntity(element, useThisValidatorType)).ToList();
         }
 
         public static List<IData<T>> ValidateEntityAsync<T>(List<T> elements, Type useThisValidatorType = null)
         {
+            IsReady();
             var validatorStrategyHandler = CreateInstanceFactory.CreateValidatorStrategyHandler<T>();
             var validator = useThisValidatorType == null
                 ? validatorStrategyHandler.GetValidator(DVcontext, elements.First())
@@ -70,8 +89,8 @@ namespace DiscoverValidation.Application
         
         public static DiscoverValidationResults ValidateMultipleEntities<T>(IList<T> entities)
         {
-            if (DVcontext == null) Initialize();
-            if(DVcontext?.DiscoverValidationResults == null) DVcontext = CreateInstanceFactory.InitializeDiscoverValidationResults(DVcontext);
+            IsReady();
+            if (DVcontext?.DiscoverValidationResults == null) DVcontext = CreateInstanceFactory.InitializeDiscoverValidationResults(DVcontext);
             var validatorStrategyHandler = CreateInstanceFactory.CreateValidatorStrategyHandler<T>();
 
             return DVcontext.CreateValidatorInstances(entities)
@@ -105,12 +124,13 @@ namespace DiscoverValidation.Application
 
         public static DiscoverValidationResults ValidateMultipleEntitiesAsync<T>(IList<T> entities)
         {
-            if (DVcontext == null) Initialize();
+            IsReady();
             DVcontext = CreateInstanceFactory.InitializeDiscoverValidationResults(DVcontext);
             var validatorStrategyHandler = CreateInstanceFactory.CreateValidatorStrategyHandler<T>();
 
             var tasks = new List<Task>();
             
+            //ToDo Improve that code
             DVcontext.ValidatorsTypesDictionary
                 .Where(d => entities
                     .Select(e => e.GetType())

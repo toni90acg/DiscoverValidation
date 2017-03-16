@@ -269,5 +269,41 @@ namespace DiscoverValidationTest
 
             var time = rest2 - rest1;
         }
+
+        [TestMethod]
+        [TestCategory("Discover Validation - Initializes")]
+        public void InitializeAssync()
+        {
+            //Act
+            var beforeInitializeWithoutAssemblyAssync = DateTime.Now;
+            var task = DiscoverValidator.InitializeAssync();
+            var afterInitializeWithoutAssemblyAssync = DateTime.Now;
+            task.Wait();
+            var afterInitializeWithoutAssemblyAssyncCompleted = DateTime.Now;
+            var elapsedTimeWithoutAssemblyAssync = afterInitializeWithoutAssemblyAssyncCompleted -
+                                                   beforeInitializeWithoutAssemblyAssync;
+
+            var beforeInitializeWithAssemblyAssync = DateTime.Now;
+            task = DiscoverValidator.InitializeAssync(typeof(CatValidation).Assembly);
+            var afterInitializeWithAssemblyAssync = DateTime.Now;
+            task.Wait();
+            var afterInitializeWitAssemblyAssyncCompleted = DateTime.Now;
+            var elapsedTimeWithAssemblyAssync = afterInitializeWitAssemblyAssyncCompleted -
+                                                   beforeInitializeWithAssemblyAssync;
+
+            var beforeInitializeWithAssembly = DateTime.Now;
+            DiscoverValidator.Initialize(typeof(CatValidation).Assembly);
+            var afterInitializeWithAssembly = DateTime.Now;
+            var elapsedTimeWithAssembly = afterInitializeWithAssembly -
+                                       beforeInitializeWithAssembly;
+
+            var beforeInitializeWithoutAssembly = DateTime.Now;
+            DiscoverValidator.Initialize();
+            var afterInitializeWithoutAssembly = DateTime.Now;
+            var elapsedTimeWithoutAssembly = afterInitializeWithoutAssembly -
+                           beforeInitializeWithoutAssembly;
+
+
+        }
     }
 }
