@@ -6,6 +6,7 @@ using System.Text;
 using DiscoverValidation.Application;
 using DiscoverValidationTest.Model.Animals;
 using DiscoverValidationTest.Model.Animals.Interface;
+using DiscoverValidationTest.Validations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace DiscoverValidationTest
@@ -18,9 +19,11 @@ namespace DiscoverValidationTest
         [TestMethod]
         public void ValidateOneUniqueEntityType()
         {
-            var numberOfEntities = 20000;
+            var numberOfEntities = 50000;
             var animals = GenerateDogs(numberOfEntities);
             Debug.WriteLine($"Validating {numberOfEntities} entities");
+            DiscoverValidator.Initialize(typeof(DogValidation).Assembly);
+            DiscoverValidator.ValidateEntity(animals);
 
             var timeRegular11 = DateTime.Now;
             DiscoverValidator.ValidateEntity(animals);
@@ -28,17 +31,17 @@ namespace DiscoverValidationTest
             var timeRegular1 = timeRegular21 - timeRegular11;
             Debug.WriteLine("timeRegular: " + timeRegular1);
 
-            var timeAssync11 = DateTime.Now;
-            DiscoverValidator.ValidateEntityAsync(animals);
-            var timeAssync21 = DateTime.Now;
-            var timeAssync1 = timeAssync21 - timeAssync11;
-            Debug.WriteLine("timeAssync: " + timeAssync1);
+            var timeParallel11 = DateTime.Now;
+            DiscoverValidator.ValidateEntityParallel(animals);
+            var timeParallel21 = DateTime.Now;
+            var timeParallel1 = timeParallel21 - timeParallel11;
+            Debug.WriteLine("timeParallel: " + timeParallel1);
 
-            var timeAssync12 = DateTime.Now;
-            DiscoverValidator.ValidateEntityAsync(animals);
-            var timeAssync22 = DateTime.Now;
-            var timeAssync2 = timeAssync22 - timeAssync12;
-            Debug.WriteLine("timeAssync: " + timeAssync2);
+            var timeParallel12 = DateTime.Now;
+            DiscoverValidator.ValidateEntityParallel(animals);
+            var timeParallel22 = DateTime.Now;
+            var timeParallel2 = timeParallel22 - timeParallel12;
+            Debug.WriteLine("timeParallel: " + timeParallel2);
 
             var timeRegular12 = DateTime.Now;
             DiscoverValidator.ValidateEntity(animals);
@@ -46,127 +49,53 @@ namespace DiscoverValidationTest
             var timeRegular2 = timeRegular22 - timeRegular12;
             Debug.WriteLine("timeRegular: " + timeRegular2);
 
-            var difference = (timeRegular2 + timeRegular1) - (timeAssync1 + timeAssync2);
+            var difference = (timeRegular2 + timeRegular1) - (timeParallel1 + timeParallel2);
 
-            Debug.WriteLine($"timeAssync is {difference} faster than timeRegular");
+            Debug.WriteLine($"timeParallel is {difference} faster than timeRegular");
 
-            Assert.IsTrue((timeRegular2 + timeRegular1) > (timeAssync1 + timeAssync2));
+            Assert.IsTrue((timeRegular2 + timeRegular1) > (timeParallel1 + timeParallel2));
         }
 
-        [TestMethod]
-        public void ValidateEntities()
-        {
-            var numberOfEntities = 20000;
-            IList<IAnimal> animals = GenerateAnimals(numberOfEntities);
-            Debug.WriteLine($"Validating {numberOfEntities} entities");
-
-            var timeRegular11 = DateTime.Now;
-            DiscoverValidator.ValidateMultipleEntitiesOld(animals);
-            var timeRegular21 = DateTime.Now;
-            var timeRegular1 = timeRegular21 - timeRegular11;
-            Debug.WriteLine("timeRegular: " + timeRegular1);
-
-            var timeAssync11 = DateTime.Now;
-            DiscoverValidator.ValidateMultipleEntitiesAssyncOld(animals);
-            var timeAssync21 = DateTime.Now;
-            var timeAssync1 = timeAssync21 - timeAssync11;
-            Debug.WriteLine("timeAssync: " + timeAssync1);
-
-            var timeAssync12 = DateTime.Now;
-            DiscoverValidator.ValidateMultipleEntitiesAssyncOld(animals);
-            var timeAssync22 = DateTime.Now;
-            var timeAssync2 = timeAssync22 - timeAssync12;
-            Debug.WriteLine("timeAssync: " + timeAssync2);
-
-            var timeRegular12 = DateTime.Now;
-            DiscoverValidator.ValidateMultipleEntitiesOld(animals);
-            var timeRegular22 = DateTime.Now;
-            var timeRegular2 = timeRegular22 - timeRegular12;
-            Debug.WriteLine("timeRegular: " + timeRegular2);
-
-            var difference = (timeRegular2 + timeRegular1) - (timeAssync1 + timeAssync2);
-
-            Debug.WriteLine($"timeAssync is {difference} faster than timeRegular");
-
-            Assert.IsTrue((timeRegular2 + timeRegular1) > (timeAssync1 + timeAssync2));
-        }
 
         [TestMethod]
-        public void ValidateEntitiesFluent()
+        [TestCategory("Times Regular vs Parallel")]
+        public void ValidateEntitiesRegularVsParallel()
         {
-            var numberOfEntities = 20000;
+            var numberOfEntities = 500;
             IList<IAnimal> animals = GenerateAnimals(numberOfEntities);
             Debug.WriteLine($"Validating {numberOfEntities} entities");
+            DiscoverValidator.Initialize(typeof(CatValidation).Assembly);
+            DiscoverValidator.ValidateMultipleEntities(animals);
 
-            var timeAssync11 = DateTime.Now;
-            DiscoverValidator.ValidateMultipleEntitiesAsync(animals);
-            var timeAssync21 = DateTime.Now;
-            var timeAssync1 = timeAssync21 - timeAssync11;
-            Debug.WriteLine("timeAssync: " + timeAssync1);
+            var timeParallel11 = DateTime.Now;
+            DiscoverValidator.ValidateMultipleEntitiesParallel(animals);
+            var timeParallel21 = DateTime.Now;
+            var timeParallel1 = timeParallel21 - timeParallel11;
+            Debug.WriteLine("timeParallel: " + timeParallel1);
 
             var timeRegular11 = DateTime.Now;
             DiscoverValidator.ValidateMultipleEntities(animals);
             var timeRegular21 = DateTime.Now;
             var timeRegular1 = timeRegular21 - timeRegular11;
             Debug.WriteLine("timeRegular: " + timeRegular1);
+
+            var timeOriginalParallel12 = DateTime.Now;
+            DiscoverValidator.ValidateMultipleEntitiesParallel(animals);
+            var timeParallel22 = DateTime.Now;
+            var timeParallel2 = timeParallel22 - timeOriginalParallel12;
+            Debug.WriteLine("timeParallel: " + timeParallel2);
             
-            var timeAssync12 = DateTime.Now;
-            DiscoverValidator.ValidateMultipleEntitiesAsync(animals);
-            var timeAssync22 = DateTime.Now;
-            var timeAssync2 = timeAssync22 - timeAssync12;
-            Debug.WriteLine("timeAssync: " + timeAssync2);
-
             var timeRegular12 = DateTime.Now;
             DiscoverValidator.ValidateMultipleEntities(animals);
             var timeRegular22 = DateTime.Now;
             var timeRegular2 = timeRegular22 - timeRegular12;
             Debug.WriteLine("timeRegular: " + timeRegular2);
-
-            var difference = (timeRegular2 + timeRegular1) - (timeAssync1 + timeAssync2);
-
-            Debug.WriteLine($"timeAssync is {difference} faster than timeRegular");
-
-            Assert.IsTrue((timeRegular2 + timeRegular1) > (timeAssync1 + timeAssync2));
-        }
-
-        [TestMethod]
-        public void ValidateEntitiesOldVsFluent()
-        {
-            var numberOfEntities = 20000;
-            IList<IAnimal> animals = GenerateAnimals(numberOfEntities);
-            Debug.WriteLine($"Validating {numberOfEntities} entities");
-
-            var validationResults = DiscoverValidator.ValidateMultipleEntities(animals);
-
-            var timeRegular11 = DateTime.Now;
-            DiscoverValidator.ValidateMultipleEntitiesOld(animals);
-            var timeRegular21 = DateTime.Now;
-            var timeRegular1 = timeRegular21 - timeRegular11;
-            Debug.WriteLine("timeRegular: " + timeRegular1);
-
-            var timeFluent11 = DateTime.Now;
-            DiscoverValidator.ValidateMultipleEntities(animals);
-            var timeFluent21 = DateTime.Now;
-            var timeFluent1 = timeFluent21 - timeFluent11;
-            Debug.WriteLine("timeAssync: " + timeFluent1);
-
-            var timeRegular12 = DateTime.Now;
-            DiscoverValidator.ValidateMultipleEntitiesOld(animals);
-            var timeRegular22 = DateTime.Now;
-            var timeRegular2 = timeRegular22 - timeRegular12;
-            Debug.WriteLine("timeRegular: " + timeRegular2);
-
-            var timeFluent12 = DateTime.Now;
-            DiscoverValidator.ValidateMultipleEntities(animals);
-            var timeFluent22 = DateTime.Now;
-            var timeFluent2 = timeFluent22 - timeFluent12;
-            Debug.WriteLine("timeAssync: " + timeFluent2);
             
-            var difference = (timeRegular2 + timeRegular1) - (timeFluent1 + timeFluent2);
+            var difference = (timeRegular2 + timeRegular1) - (timeParallel2 + timeRegular1);
 
-            Debug.WriteLine($"timeAssync is {difference} faster than timeRegular");
+            Debug.WriteLine($"timeParallel is {difference} faster than timeRegular");
 
-            Assert.IsTrue((timeRegular2 + timeRegular1) > (timeFluent1 + timeFluent2));
+            Assert.IsTrue((timeRegular2 + timeRegular1) > (timeRegular1 + timeParallel2));
         }
 
         private List<Dog> GenerateDogs(int numberOfAnimals)

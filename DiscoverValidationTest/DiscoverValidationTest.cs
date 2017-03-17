@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DiscoverValidation.Application;
+using DiscoverValidation.Exceptions;
 using DiscoverValidation.Extensions;
 using DiscoverValidation.Model.Data;
 using DiscoverValidationTest.Model.Animals;
@@ -54,44 +55,6 @@ namespace DiscoverValidationTest
 
         [TestMethod]
         [TestCategory("Discover Validation - One Element")]
-        public void ValidationOneNotValidatedBirdElement()
-        {
-            //Arrange
-            var bird = new Bird("Tweety", 1, false, "Mammal");
-
-            //Act
-            var target = DiscoverValidator.ValidateEntity(bird);
-            var isValid = target.IsValid();
-            var validationFailures = target.GetValidationFailures();
-
-            //Assert
-            Assert.IsNotNull(target);
-            Assert.IsInstanceOfType(target, typeof(NotValidatedData<Bird>));
-            Assert.IsNull(isValid);
-            Assert.IsTrue(validationFailures.Any());
-        }
-
-        [TestMethod]
-        [TestCategory("Discover Validation - One Element")]
-        public void ValidationOneNotValidatableBigFoodElement()
-        {
-            //Arrange
-            var bird = new BigFoot();
-
-            //Act
-            var target = DiscoverValidator.ValidateEntity(bird);
-            var isValid = target.IsValid();
-            var validationFailures = target.GetValidationFailures();
-
-            //Assert
-            Assert.IsNotNull(target);
-            Assert.IsInstanceOfType(target, typeof(NotValidatableData<BigFoot>));
-            Assert.IsNull(isValid);
-            Assert.IsTrue(validationFailures.Any());
-        }
-
-        [TestMethod]
-        [TestCategory("Discover Validation - One Element")]
         public void ValidationOneInvalidCatElement()
         {
             //Arrange
@@ -107,6 +70,18 @@ namespace DiscoverValidationTest
             Assert.IsInstanceOfType(target, typeof(InvalidData<Cat>));
             Assert.IsFalse(isValid != null && isValid.Value);
             Assert.IsTrue(validationFailures.Any());
+        }
+
+        [TestMethod]
+        [TestCategory("Discover Validation - One Element")]
+        [ExpectedException(typeof(DiscoverValidationCreatingValidatorException))]
+        public void ValidationOneNotValidatedBirdElement()
+        {
+            //Arrange
+            var bird = new Bird("Tweety", 1, false, "Mammal");
+
+            //Act
+            var target = DiscoverValidator.ValidateEntity(bird);
         }
 
         [TestMethod]
@@ -128,7 +103,29 @@ namespace DiscoverValidationTest
             Assert.IsNull(validationFailures);
         }
 
-       
+        [TestMethod]
+        [TestCategory("Discover Validation - One Element")]
+        [ExpectedException(typeof(DiscoverValidationCreatingValidatorException))]
+        public void ValidationOneValidBirdWithWrongValidatorElement()
+        {
+            //Arrange
+            var bird = new Bird("Tweety", 1, true, "Bird");
+
+            //Act
+            DiscoverValidator.ValidateEntity(bird, useThisValidatorType: typeof(Bird));
+        }
+
+        [TestMethod]
+        [TestCategory("Discover Validation - One Element")]
+        [ExpectedException(typeof(DiscoverValidationCreatingValidatorException))]
+        public void ValidationOneNotValidatableBigFoodElement()
+        {
+            //Arrange
+            var bigFoot = new BigFoot();
+
+            //Act
+            DiscoverValidator.ValidateEntity(bigFoot);
+        }
 
         [TestMethod]
         [TestCategory("Discover Validation - Multiple Elements of one unique type")]
@@ -187,9 +184,8 @@ namespace DiscoverValidationTest
         public void ValidationMultipleElements()
         {
             //Act
-            var results = DiscoverValidator.ValidateMultipleEntitiesOld(_animals); // Animals is a List<IAnimal>
-
-           
+            var results = DiscoverValidator.ValidateMultipleEntities(_animals); // Animals is a List<IAnimal>
+            
             var allresultsOfDogs = results.GetDataOfType<Dog>();
             allresultsOfDogs.ForEach(data =>
             {
@@ -246,38 +242,24 @@ namespace DiscoverValidationTest
             var validatableEntityTypes = results.ValidatableEntityTypes;
             Assert.AreEqual(2, validatableEntityTypes.Count);
         }
-
-        [TestMethod]
-        [TestCategory("Discover Validation - Multiple Elements")]
-        public void ValidationMultipleElementsFluent()
-        {
-            //Act
-            DiscoverValidator.Initialize(typeof(CatValidation).Assembly);
-           // var results = DiscoverValidator.ValidateMultipleEntities(_animals); // Animals is a List<IAnimal>
-
-            var time1 = DateTime.Now;
-            var resultsOneEntity = DiscoverValidator.ValidateMultipleEntities(_animals);
-            var time2 = DateTime.Now;
-
-            var rest1 = time2 - time1;
-
-            var time3 = DateTime.Now;
-            var resultsOneEntityAssync = DiscoverValidator.ValidateMultipleEntitiesAsync(_animals);
-            var time4 = DateTime.Now;
-
-            var rest2 = time4 - time3;
-
-            var time = rest2 - rest1;
-        }
-
+        
         [TestMethod]
         [TestCategory("Discover Validation - Initializes")]
         public void InitializeAssync()
         {
+            var initializeTask = DiscoverValidator.InitializeAssync();
+            Assert.IsFalse(initializeTask.IsCompleted);
+            DiscoverValidator.ValidateEntity(new Dog("Max", 3, false, "Mammal"));
+            Assert.IsTrue(initializeTask.IsCompleted);
+        }
+
+        [TestMethod]
+        [TestCategory("Discover Validation - Initializes")]
+        public void InitializeTimesAssync()
+        {
             //Act
             var beforeInitializeWithoutAssemblyAssync = DateTime.Now;
             var task = DiscoverValidator.InitializeAssync();
-            var afterInitializeWithoutAssemblyAssync = DateTime.Now;
             task.Wait();
             var afterInitializeWithoutAssemblyAssyncCompleted = DateTime.Now;
             var elapsedTimeWithoutAssemblyAssync = afterInitializeWithoutAssemblyAssyncCompleted -
@@ -285,12 +267,18 @@ namespace DiscoverValidationTest
 
             var beforeInitializeWithAssemblyAssync = DateTime.Now;
             task = DiscoverValidator.InitializeAssync(typeof(CatValidation).Assembly);
-            var afterInitializeWithAssemblyAssync = DateTime.Now;
             task.Wait();
             var afterInitializeWitAssemblyAssyncCompleted = DateTime.Now;
             var elapsedTimeWithAssemblyAssync = afterInitializeWitAssemblyAssyncCompleted -
                                                    beforeInitializeWithAssemblyAssync;
 
+            Assert.IsTrue(elapsedTimeWithAssemblyAssync < elapsedTimeWithoutAssemblyAssync);
+        }
+
+        [TestMethod]
+        [TestCategory("Discover Validation - Initializes")]
+        public void InitializeTimesWithAndWithoutAssembly()
+        {
             var beforeInitializeWithAssembly = DateTime.Now;
             DiscoverValidator.Initialize(typeof(CatValidation).Assembly);
             var afterInitializeWithAssembly = DateTime.Now;
@@ -303,7 +291,7 @@ namespace DiscoverValidationTest
             var elapsedTimeWithoutAssembly = afterInitializeWithoutAssembly -
                            beforeInitializeWithoutAssembly;
 
-
+            Assert.IsTrue(elapsedTimeWithAssembly < elapsedTimeWithoutAssembly);
         }
     }
 }
