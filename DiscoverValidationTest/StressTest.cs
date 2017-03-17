@@ -56,6 +56,45 @@ namespace DiscoverValidationTest
             Assert.IsTrue((timeRegular2 + timeRegular1) > (timeParallel1 + timeParallel2));
         }
 
+        [TestMethod]
+        public void ValidateOneUniqueEntityTypeParallelVsAssync()
+        {
+            var numberOfEntities = 50000;
+            var animals = GenerateDogs(numberOfEntities);
+            Debug.WriteLine($"Validating {numberOfEntities} entities");
+            DiscoverValidator.Initialize(typeof(DogValidation).Assembly);
+            DiscoverValidator.ValidateEntity(animals);
+
+            var timeRegular11 = DateTime.Now;
+            DiscoverValidator.ValidateEntityAsync(animals);
+            var timeRegular21 = DateTime.Now;
+            var timeRegular1 = timeRegular21 - timeRegular11;
+            Debug.WriteLine("timeRegular: " + timeRegular1);
+
+            var timeParallel11 = DateTime.Now;
+            DiscoverValidator.ValidateEntityParallel(animals);
+            var timeParallel21 = DateTime.Now;
+            var timeParallel1 = timeParallel21 - timeParallel11;
+            Debug.WriteLine("timeParallel: " + timeParallel1);
+
+            var timeParallel12 = DateTime.Now;
+            DiscoverValidator.ValidateEntityParallel(animals);
+            var timeParallel22 = DateTime.Now;
+            var timeParallel2 = timeParallel22 - timeParallel12;
+            Debug.WriteLine("timeParallel: " + timeParallel2);
+
+            var timeRegular12 = DateTime.Now;
+            DiscoverValidator.ValidateEntityAsync(animals);
+            var timeRegular22 = DateTime.Now;
+            var timeRegular2 = timeRegular22 - timeRegular12;
+            Debug.WriteLine("timeRegular: " + timeRegular2);
+
+            var difference = (timeRegular2 + timeRegular1) - (timeParallel1 + timeParallel2);
+
+            Debug.WriteLine($"timeParallel is {difference} faster than timeRegular");
+
+            Assert.IsTrue((timeRegular2 + timeRegular1) > (timeParallel1 + timeParallel2));
+        }
 
         [TestMethod]
         [TestCategory("Times Regular vs Parallel")]

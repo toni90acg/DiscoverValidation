@@ -19,25 +19,27 @@ namespace DiscoverValidation.Application
         internal static DiscoverValidatorContext DVcontext;
         public static Task InitializedTask;
 
+        /// <summary>
+        /// Initializes the DiscoverValidator
+        /// </summary>
+        /// <param name="assembly">Specify the assembly of the validators to make it faster</param>
         public static void Initialize(Assembly assembly = null)
         {
             DVcontext = CreateInstanceFactory.CreateDiscoverValidationContext(assembly);
         }
 
+        /// <summary>
+        /// Initializes the DiscoverValidator
+        /// </summary>
+        /// <param name="assembly">Specify the assembly of the validators to make it faster</param>
+        /// <returns>Returns the running Task</returns>
         public static Task InitializeAssync(Assembly assembly = null)
         {
             InitializedTask = Task.Run(()=>DVcontext = CreateInstanceFactory.CreateDiscoverValidationContext(assembly));
             return InitializedTask;
         }
-
-        private static void IsReady()
-        {
-            InitializedTask?.Wait();
-            if (DVcontext == null)
-            {
-                Initialize();
-            }
-        }
+       
+        #region Validate Entity
 
         /// <summary>
         /// Validate one unique entity
@@ -54,11 +56,10 @@ namespace DiscoverValidation.Application
                 ? validatorStrategyHandler.GetValidator(DVcontext, element)
                 : validatorStrategyHandler.GetValidator(DVcontext, useThisValidatorType);
 
-            if(validator == null) throw new DiscoverValidationCreatingValidatorException($"You need to specify a validator type for the entity of type {element.GetType().Name}");
+            if (validator == null) throw new DiscoverValidationCreatingValidatorException($"You need to specify a validator type for the entity of type {element.GetType().Name}");
 
             return validatorStrategyHandler.ValidateOneTypeEntity(element, DVcontext, validator);
         }
-        
 
         /// <summary>
         /// Validate a list of entities of one unique type
@@ -73,6 +74,7 @@ namespace DiscoverValidation.Application
             return elements.Select(element => ValidateEntity(element, useThisValidatorType)).ToList();
         }
 
+        [Obsolete("I don't like it")]
         public static List<IData<T>> ValidateEntityAsync<T>(List<T> elements, Type useThisValidatorType = null)
         {
             IsReady();
@@ -89,7 +91,7 @@ namespace DiscoverValidation.Application
 
             return tasks.Select(t => t.Result).ToList();
         }
-
+        
         public static List<IData<T>> ValidateEntityParallel<T>(List<T> elements, Type useThisValidatorType = null)
         {
             IsReady();
@@ -102,6 +104,10 @@ namespace DiscoverValidation.Application
                 .Select(element => validatorStrategyHandler.ValidateOneTypeEntity(element, DVcontext, validator))
                 .ToList();
         }
+
+        #endregion
+
+        #region Validate Multiple Entities
 
         public static DiscoverValidationResults ValidateMultipleEntities<T>(IList<T> entities)
         {
@@ -124,5 +130,20 @@ namespace DiscoverValidation.Application
 
             return DVcontext.DiscoverValidationResults;
         }
+
+        #endregion
+
+        #region Private methods
+
+        private static void IsReady()
+        {
+            InitializedTask?.Wait();
+            if (DVcontext == null)
+            {
+                Initialize();
+            }
+        }
+
+        #endregion
     }
 }
