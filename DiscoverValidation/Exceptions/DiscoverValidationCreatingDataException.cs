@@ -2,7 +2,7 @@ using System;
 
 namespace DiscoverValidation.Exceptions
 {
-    internal class DiscoverValidationCreatingDataException : Exception
+    public sealed class DiscoverValidationCreatingDataException : Exception
     {
         public DiscoverValidationCreatingDataException(string message,
             Exception innerException) : base(message, innerException)
@@ -10,7 +10,7 @@ namespace DiscoverValidation.Exceptions
         }
     }
 
-    internal class DiscoverValidationCreatingValidatorException : Exception
+    public sealed class DiscoverValidationCreatingValidatorException : Exception
     {
         public DiscoverValidationCreatingValidatorException(string message) : base(message)
         {

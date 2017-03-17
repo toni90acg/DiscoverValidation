@@ -88,7 +88,7 @@ namespace DiscoverValidation.Helpers
             return validatorsDictionary;
         }
 
-        private static bool IsAssignableToGenericType(Type givenType, Type genericType)
+        internal static bool IsAssignableToGenericType(Type givenType, Type genericType)
         {
             if (givenType.GetInterfaces()
                 .Any(it => it.IsGenericType && it.GetGenericTypeDefinition() == genericType))
