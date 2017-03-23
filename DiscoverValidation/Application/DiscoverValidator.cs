@@ -97,7 +97,13 @@ namespace DiscoverValidation.Application
         #endregion
 
         #region Validate Multiple Entities
-                
+          
+        /// <summary>
+        /// Validate a list of entities of any type
+        /// </summary>
+        /// <typeparam name="T">Type of the entities to validate</typeparam>
+        /// <param name="elements">Entities to validate</param>
+        /// <returns>Returns DiscoverValidationResults element</returns>
         public static DiscoverValidationResults ValidateMultipleEntities<T>(IList<T> entities)
         {
             IsReady();
@@ -108,6 +114,12 @@ namespace DiscoverValidation.Application
                 .ValidateEntities(entities, validatorStrategyHandler);
         }
 
+        /// <summary>
+        /// Validate a list of entities of any type as Parallel
+        /// </summary>
+        /// <typeparam name="T">Type of the entities to validate</typeparam>
+        /// <param name="elements">Entities to validate</param>
+        /// <returns>Returns DiscoverValidationResults element</returns>
         public static DiscoverValidationResults ValidateMultipleEntitiesParallel<T>(IList<T> entities)
         {
             IsReady();
