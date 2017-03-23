@@ -29,7 +29,7 @@ namespace DiscoverValidation.Application
         }
 
         /// <summary>
-        /// Initializes the DiscoverValidator
+        /// Initializes the DiscoverValidator asynchronously
         /// </summary>
         /// <param name="assembly">Specify the assembly of the validators to make it faster</param>
         /// <returns>Returns the running Task</returns>
@@ -74,24 +74,13 @@ namespace DiscoverValidation.Application
             return elements.Select(element => ValidateEntity(element, useThisValidatorType)).ToList();
         }
 
-        [Obsolete("I don't like it")]
-        public static List<IData<T>> ValidateEntityAsync<T>(List<T> elements, Type useThisValidatorType = null)
-        {
-            IsReady();
-            var validatorStrategyHandler = CreateInstanceFactory.CreateValidatorStrategyHandler<T>();
-            var validator = useThisValidatorType == null
-                ? validatorStrategyHandler.GetValidator(DVcontext, elements.First())
-                : validatorStrategyHandler.GetValidator(DVcontext, useThisValidatorType);
-
-            IList<Task<IData<T>>> tasks = new List<Task<IData<T>>>();
-            elements.ForEach(element =>
-            {
-                tasks.Add(Task.Run(() => validatorStrategyHandler.ValidateOneTypeEntity(element, DVcontext, validator)));
-            });
-
-            return tasks.Select(t => t.Result).ToList();
-        }
-        
+        /// <summary>
+        /// Validate a list of entities of one unique type as Parallel
+        /// </summary>
+        /// <typeparam name="T">Type of the entities to validate</typeparam>
+        /// <param name="elements">Entities to validate</param>
+        /// <param name="useThisValidatorType">Optional parameter to use an specific validator. It has to implement IDiscoverValidator</param>
+        /// <returns>Returns a list of IData of type T</returns>
         public static List<IData<T>> ValidateEntityParallel<T>(List<T> elements, Type useThisValidatorType = null)
         {
             IsReady();
@@ -108,7 +97,7 @@ namespace DiscoverValidation.Application
         #endregion
 
         #region Validate Multiple Entities
-
+                
         public static DiscoverValidationResults ValidateMultipleEntities<T>(IList<T> entities)
         {
             IsReady();
