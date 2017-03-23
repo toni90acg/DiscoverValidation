@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -10,7 +9,6 @@ using DiscoverValidation.Helpers;
 using DiscoverValidation.Model.Context;
 using DiscoverValidation.Model.Data.Interface;
 using DiscoverValidation.Model.ValidationResults;
-using FluentValidation.Results;
 
 namespace DiscoverValidation.Application
 {
@@ -97,12 +95,12 @@ namespace DiscoverValidation.Application
         #endregion
 
         #region Validate Multiple Entities
-          
+
         /// <summary>
         /// Validate a list of entities of any type
         /// </summary>
         /// <typeparam name="T">Type of the entities to validate</typeparam>
-        /// <param name="elements">Entities to validate</param>
+        /// <param name="entities">Entities to validate</param>
         /// <returns>Returns DiscoverValidationResults element</returns>
         public static DiscoverValidationResults ValidateMultipleEntities<T>(IList<T> entities)
         {
@@ -118,7 +116,7 @@ namespace DiscoverValidation.Application
         /// Validate a list of entities of any type as Parallel
         /// </summary>
         /// <typeparam name="T">Type of the entities to validate</typeparam>
-        /// <param name="elements">Entities to validate</param>
+        /// <param name="entities">Entities to validate</param>
         /// <returns>Returns DiscoverValidationResults element</returns>
         public static DiscoverValidationResults ValidateMultipleEntitiesParallel<T>(IList<T> entities)
         {

@@ -145,7 +145,7 @@ namespace DiscoverValidationTest
             var rest1 = time2 - time1;
 
             var time3 = DateTime.Now;
-            var resultsOneEntityAssync = DiscoverValidator.ValidateEntityAsync(entities);
+            var resultsOneEntityParallel = DiscoverValidator.ValidateEntityParallel(entities);
             var time4 = DateTime.Now;
 
             var rest2 = time4 - time3;

@@ -60,7 +60,6 @@
     <Compile Include="Model\Animals\Dog.cs" />
     <Compile Include="Model\Animals\Interface\IAnimal.cs" />
     <Compile Include="StressTest.cs" />
-    <Compile Include="UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Validations\BirdValidation.cs" />
     <Compile Include="Validations\CatValidation.cs" />

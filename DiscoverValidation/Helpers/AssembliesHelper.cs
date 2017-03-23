@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using DiscoverValidation.CustomAttribute;
 using DiscoverValidation.Extensions;
 using DiscoverValidation.GenericValidator;
 using DiscoverValidation.Model.ValidationResults;
@@ -68,26 +67,7 @@ namespace DiscoverValidation.Helpers
             entitiesWithMultipleValidatorsConflicts = entitiesWithMultipleValidators;
             return validatorsDictionary;
         }
-
-        internal static Dictionary<Type, Type> CreateValidators()
-        {
-            var validatorsDictionary = new Dictionary<Type, Type>();
-
-            AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
-                .Where(t => IsAssignableToGenericType(t, typeof(AbstractDiscoverValidator<>)))
-                .Where(t => !t.IsAbstract && !t.IsInterface)
-                .Select(s => new
-                {
-                    attribute = s.GetCustomAttributes<ValidateEntityAttribute>().Single(),
-                    validator = s
-                })
-                .Where(e => e.attribute != null).ToList()
-                .ForEach(e => validatorsDictionary.Add(e.attribute.Entity, e.validator));
-
-            return validatorsDictionary;
-        }
-
+        
         internal static bool IsAssignableToGenericType(Type givenType, Type genericType)
         {
             if (givenType.GetInterfaces()

@@ -45,7 +45,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Application\DiscoverValidator.cs" />
-    <Compile Include="CustomAttribute\ValidateEntityAttribute.cs" />
     <Compile Include="Exceptions\DiscoverValidationCreatingValidatorException.cs" />
     <Compile Include="Extensions\DiscoverValidatorExtension.cs" />
     <Compile Include="Extensions\ICollectionExtension.cs" />
