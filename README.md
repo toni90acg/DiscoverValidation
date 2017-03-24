@@ -7,7 +7,7 @@ If you like FluentValidation you'd love this!
 
 The use is really similar to FluentValidation.
 
-### Validator
+### Defining a Validator
 
 First of all, you have to create a validator for your entity:
 
@@ -26,7 +26,7 @@ First of all, you have to create a validator for your entity:
    
 And you won't have to instanciate it because DiscoverValidation will do it for you.
 
-### Validate Entity
+### Validating entities
 
 The validators are loaded automatically. Once the Validator has been created, you only have to validate the entity.
 
@@ -84,7 +84,7 @@ In this case, we'll use the DiscoverValidationResults entity.
 ```
 
 Then, there are several properties to extract all the data that we want from de DiscoverValidationResults.
-    
+
 ## Initialization
 
 At some point, DiscoverValidator will look for all the validators. This validation will be done automatically if is needed but we also have the possibility of do this initialization when we want. Moreover we can specify the assembly which the validators are contained, in this way we could make the initialization faster.
@@ -103,7 +103,6 @@ Additionally we could start the initialization Asynchronously:
 ```
 
 However, if we try to validate something before the initialization has been completed, DiscoverValidation will wait.
-
 
 # About the project:
 The projects started as AttributeValidation, an easy way to validate entities with attributes. It was useful but with that you had to modify the model of your solution (but idea!). Then I started developing DiscoverValidation, it doesn't need to modify any model, it only needs you to create your validators and it will found them and use them when will be necessary.
