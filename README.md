@@ -3,10 +3,15 @@ An easy example about using attributes to validate entities.
 It uses reflection and FluentValidation.
 If you like FluentValidation you'd love this!
 
-Really simple to use.
+## How to use it
 
-First of all, you have to create a validator for your entity like in FluentValidation:
+The use is really similar to FluentValidation.
 
+### Defining a Validator
+
+First of all, you have to create a validator for your entity:
+
+```csharp
     public class DogValidation : AbstractDiscoverValidator<Dog>
     {
         public DogValidation()
@@ -16,21 +21,27 @@ First of all, you have to create a validator for your entity like in FluentValid
             RuleFor(dog => dog.Age).GreaterThan(-1).WithMessage("Please specify a valid age");
             RuleFor(dog => dog.CanFly).NotEqual(true).WithMessage("Dogs can't fly");
         }
-    }    
+    }  
+```
+   
 And you won't have to instanciate it because DiscoverValidation will do it for you.
 
-Now, let's see how to validate an entity.
+### Validating entities
 
-For one unique entity:
+The validators are loaded automatically. Once the Validator has been created, you only have to validate the entity.
 
+#### Validating one unique entity
+
+```csharp
             var cat = new Cat("Max", 1, true, "Mammal");
             var validationResults = DiscoverValidator.ValidateEntity(cat);            
             var valid = validationResults.IsValid();
-            var validationFailures = target.GetValidationFailures();
+            var validationFailures = target.GetValidationFailures();  
+```
 
+#### Validating a list of entities of one unique type
 
-For a list of one unique entity:
-
+```csharp
             var resultsOneEntity = DiscoverValidator.ValidateEntity(new List<Dog>()
             {
                 new Dog("Max", 6, false, "Mammal"),
@@ -58,20 +69,40 @@ For a list of one unique entity:
             {
                 var entity = data.Entity;
                 //Do whatever you want
-            });
-            
+            }); 
+```         
 
-For a list of any entity:
-    In this case, we'll use the DiscoverValidationResults entity.
-    
+#### Validating a list of entities of any type
+
+In this case, we'll use the DiscoverValidationResults entity.
+
+```csharp
             var results = DiscoverValidator.ValidateMultipleEntities(_animals); // _animals is a List<IAnimal>
             var allresultsOfDogs = results.GetDataOfType<Dog>();
             var allInvalidDataOfCats = results.GetInvalidDataOfType<Cat>();
-            var allNotValidatableDataOfBigFoot = results.GetNotValidatableDataOfType<BigFoot>();
-            
-    And in this case we have several properties to interact with it.
+            var allNotValidatableDataOfBigFoot = results.GetNotValidatableDataOfType<BigFoot>(); 
+```
 
-And that's it.
+Then, there are several properties to extract all the data that we want from de DiscoverValidationResults.
+
+## Initialization
+
+At some point, DiscoverValidator will look for all the validators. This validation will be done automatically if is needed but we also have the possibility of do this initialization when we want. Moreover we can specify the assembly which the validators are contained, in this way we could make the initialization faster.
+
+### Specifying the assembly
+
+```csharp
+            DiscoverValidator.Initialize(typeof(DogValidation).Assembly);
+```
+
+### Initialize Asynchronously
+
+Additionally we could start the initialization Asynchronously:
+```csharp
+            var initializeTask = DiscoverValidator.InitializeAssync();
+```
+
+However, if we try to validate something before the initialization has been completed, DiscoverValidation will wait.
 
 # About the project:
 The projects started as AttributeValidation, an easy way to validate entities with attributes. It was useful but with that you had to modify the model of your solution (but idea!). Then I started developing DiscoverValidation, it doesn't need to modify any model, it only needs you to create your validators and it will found them and use them when will be necessary.
