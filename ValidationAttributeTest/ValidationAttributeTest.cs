@@ -51,7 +51,7 @@ namespace ValidationAttributeTest
             foreach (var animal in _animals)
             {
                 var validationAttribute = animal.GetType()
-                    .GetCustomAttribute<MyValidationAttribute>();
+                    .GetCustomAttribute<ValidatorAttribute>();
 
                 if (validationAttribute == null)
                 {
@@ -112,7 +112,7 @@ namespace ValidationAttributeTest
             foreach (var animal in _animals)
             {
                 var validationAttribute = animal.GetType()
-                    .GetCustomAttribute<MyValidationAttribute>();
+                    .GetCustomAttribute<ValidatorAttribute>();
 
                 if (validationAttribute == null)
                 {

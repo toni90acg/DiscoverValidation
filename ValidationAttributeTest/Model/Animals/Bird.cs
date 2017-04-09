@@ -4,7 +4,7 @@ using ValidationAttributeTest.Validations;
 
 namespace ValidationAttributeTest.Model.Animals
 {
-    [MyValidation(typeof(BirdValidation))]
+    [Validator(typeof(BirdValidation))]
     public class Bird : IAnimal
     {
         public string Name { get; set; }

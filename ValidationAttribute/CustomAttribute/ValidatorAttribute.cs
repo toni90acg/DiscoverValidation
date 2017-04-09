@@ -4,11 +4,11 @@ using ValidationAttribute.Exceptions;
 
 namespace ValidationAttribute.CustomAttribute
 {
-    public class MyValidationAttribute : Attribute
+    public class ValidatorAttribute : Attribute
     {
         public IAttributeValidator Validator { get; set; }
 
-        public MyValidationAttribute(Type validator)
+        public ValidatorAttribute(Type validator)
         {
             if (!typeof(IAttributeValidator).IsAssignableFrom(validator))
                 throw new ValidationAttributeException(validator.Name);
