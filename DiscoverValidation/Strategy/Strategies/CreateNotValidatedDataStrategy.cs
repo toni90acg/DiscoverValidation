@@ -11,19 +11,8 @@ namespace DiscoverValidation.Strategy.Strategies
     {
         public void UpdateValidationResuls<T>(DiscoverValidatorContext context, T element, ValidationResult validationResult = null)
         {
-            //var validatorsFound =
-            //    context.EntitiesWithMultiplesValidators
-            //    .Single(ewmv => ewmv.EntityType == element.GetType())
-            //    .Validators;
-            //var data = CreateInstanceFactory.CreateData(typeof(NotValidatedData<>), element, validators: validatorsFound);
-
             var data = CreateData(context, element);
-
             UpdateData(context, element, data);
-
-            //context.DiscoverValidationResults.NotValidatedEntityTypes.Add(element.GetType());
-            //context.DiscoverValidationResults.NotValidatedDataList.Add(data);
-            //context.DiscoverValidationResults.AllDataList.Add(data);
         }
 
         public void UpdateValidationResulsLock<T>(DiscoverValidatorContext context, T element, object lockObject,
@@ -39,9 +28,6 @@ namespace DiscoverValidation.Strategy.Strategies
             lock (lockObject)
             {
                 UpdateData(context, element, data);
-                //context.DiscoverValidationResults.NotValidatedEntityTypes.Add(element.GetType());
-                //context.DiscoverValidationResults.NotValidatedDataList.Add(data);
-                //context.DiscoverValidationResults.AllDataList.Add(data);
             }
         }
 
